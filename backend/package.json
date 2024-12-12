@@ -1,0 +1,50 @@
+{
+  "name": "museum_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@mantine/core": "^7.14.3",
+    "@mantine/hooks": "^7.14.3",
+    "@reduxjs/toolkit": "^2.4.0",
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "connect-mongo": "^3.2.0",
+    "connect-mongostore": "^0.1.4",
+    "cors": "^2.8.5",
+    "datatables-query": "^0.2.0",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "express-session": "^1.17.2",
+    "fs-extra": "^11.2.0",
+    "generate-unique-id": "^2.0.1",
+    "handy-log": "^1.0.3",
+    "invoice-number": "^1.0.6",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "mongoose": "^5.11.17",
+    "multer": "^1.4.3",
+    "nodemailer": "^6.6.5",
+    "onesignal-node": "^3.4.0",
+    "otp-generator": "^2.0.1",
+    "paypal-rest-sdk": "^1.8.1",
+    "razorpay": "^2.0.7",
+    "request": "^2.88.2",
+    "socket.io": "^4.4.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "postcss": "^8.4.49",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1"
+  }
+}

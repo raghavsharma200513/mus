@@ -1,0 +1,16 @@
+.page-title{
+    background-color: #F8C995;
+    text-align: center;
+    color: #554539;
+    padding: 1em;
+    font-family: 'Jost', 'serif';
+    h1 {
+        font-weight: 500;
+        font-size: 1.75em;
+        margin-bottom: 0.5em;
+    }
+    h2{
+        color: hsla(26, 20%, 28%, 0.5);
+        font-size: 1.125em;
+    }
+}

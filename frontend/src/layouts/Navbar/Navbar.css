@@ -1,0 +1,50 @@
+.nav-menu{
+    a{
+        position: relative;
+        display: block;
+        &:hover{
+            color: var(--accent-color);
+            &::after{
+                content: '';
+                display: block;
+                height: 1px;
+                position: relative;
+                bottom: -3px;
+                background-color: var(--accent-color);
+                width: 100%;
+            }
+        }
+        &.active{
+            color: var(--accent-color);
+            font-weight: 500;
+            &::after{
+                content: '';
+                display: block;
+                height: 1px;
+                position: relative;
+                bottom: -3px;
+                background-color: var(--accent-color);
+            }
+        }
+    }
+
+    
+}
+.cartIcon{
+    position: relative;
+    .dot{
+        position: absolute;
+        display: flex;
+        background-color: var(--tertiary-color);
+        color: white;
+        width: 15px;
+        height: 15px;
+        font-size: 12px;
+        right: -4px;
+        top: -4px;
+        place-content: center;
+        overflow: hidden;
+        border-radius: 50%;
+        line-height: 15px;
+    }
+}
