@@ -171,29 +171,29 @@ const Home = () => {
           autoPlay
           muted
           loop
-          className="absolute inset-0 w-full h-full object-cover z-0 "
+          className="absolute inset-0 w-full h-[100vh] object-cover z-0 "
         ></video>
-        <div className="showcaseOverlay pt-24 pb-28 relative z-1 bg-black/50 w-full">
-          <div className="showcaseContent max-w-4xl mx-auto">
-            <h1 className="font-cormorantG  text-[100px] leading-[90px] text-center font-semibold">
+        <div className="showcaseOverlay pt-24 pb-28 relative z-1 h-[100vh] bg-black/50 w-full">
+          <div className="showcaseContent max-w-4xl mx-auto px-4">
+            <h1 className="font-cormorantG text-[40px] sm:text-[60px] md:text-[80px] lg:text-[100px] leading-[1.2] text-center font-semibold">
               {language == "de"
                 ? showcaseSection.de.title
                 : showcaseSection.en.title}
             </h1>
-            <p className="font-jost text-[18px] mt-4 font-normal text-center">
+            <p className="font-jost text-[14px] sm:text-[16px] md:text-[18px] mt-4 font-normal text-center">
               {language == "de"
                 ? showcaseSection.de.desc
                 : showcaseSection.en.desc}
             </p>
-            <div className="btns flex mt-8 items-center justify-center gap-6">
-              <a href="#table">
-                <button className="flex gap-1 text-white bg-secondary items-center place-content-center content-center font-jost w-[200px] h-[50px] rounded hover:bg-secondary/80 transition-color duration-500">
+            <div className="btns flex flex-col sm:flex-row mt-8 items-center justify-center gap-6">
+              <a href="#table" className="w-full sm:w-auto">
+                <button className="flex gap-1 text-white bg-secondary items-center justify-center font-jost w-full sm:w-[200px] h-[50px] rounded hover:bg-secondary/80 transition-colors duration-500">
                   {language == "en" ? "BOOK A TABLE" : "TISCH RESERVIEREN"}
                 </button>
               </a>
               <button
                 onClick={() => navigate("/menu")}
-                className="flex gap-1 text-white bg-secondary items-center place-content-center content-center font-jost w-[200px] h-[50px] rounded hover:bg-secondary/80 transition-color duration-500"
+                className="flex gap-1 text-white bg-secondary items-center justify-center font-jost w-full sm:w-[200px] h-[50px] rounded hover:bg-secondary/80 transition-colors duration-500"
               >
                 {language == "en" ? "ORDER NOW" : "ONLINE BESTELLEN"}
               </button>
@@ -277,75 +277,89 @@ const Home = () => {
           alt=""
         />
       </section>
-      <section className="relative py-24">
+      <section className="relative py-16 lg:py-24 px-6 lg:px-0">
+        {/* Decorative Images */}
         <img
           src={assets.tomato}
           alt=""
-          className="decor1 absolute top-0 z-[-1] w-[20vw] max-w-96"
+          className="absolute top-0 z-[-1] w-[30vw] max-w-[96px] lg:w-[20vw] lg:max-w-96"
         />
         <img
           src={assets.coriander}
           alt=""
-          className="decor1 absolute z-[-1] w-[20vw] max-w-96c bottom-0 right-0 top32"
+          className="absolute bottom-0 right-0 z-[-1] w-[30vw] max-w-[96px] lg:w-[20vw] lg:max-w-96 top-32"
         />
-        <div className="content">
-          <h2 className="font-semibold font-jost mb-5 text-5xl uppercase leading-normal text-[#554539] mx-auto text-center max-w-4xl">
+
+        {/* Content Section */}
+        <div className="content text-center mx-auto">
+          <h2 className="font-semibold font-jost mb-6 text-3xl md:text-4xl lg:text-5xl uppercase leading-snug lg:leading-normal text-[#554539] max-w-3xl lg:max-w-4xl mx-auto">
             {language == "en"
               ? "Germany’s Premier Indian Restaurant Presents"
               : "DEUTSCHLANDS PREMIEREN-INDISCHES RESTAURANT STELLT VOR"}
           </h2>
-          <p className="text-center max-w-5xl font-jost mx-auto text-[#554539] text-lg">
+          <p className="text-center font-jost text-base md:text-lg text-[#554539] max-w-2xl lg:max-w-5xl mx-auto">
             {language == "en"
               ? `Inspired by the historic grandeur of Hohenzollern Castle, our Indian
-            restaurant is a celebration of royal traditions and timeless taste.
-            With a focus on traditional spices and historic elegance, our
-            restaurant brings the culinary splendor of India’s royal heritage to
-            every dish. A truly majestic dining experience awaits you.`
+        restaurant is a celebration of royal traditions and timeless taste.
+        With a focus on traditional spices and historic elegance, our
+        restaurant brings the culinary splendor of India’s royal heritage to
+        every dish. A truly majestic dining experience awaits you.`
               : "„Inspiriert von der historischen Pracht der Burg Hohenzollern, feiert unser indisches Restaurant die königlichen Traditionen und zeitlosen Geschmacksrichtungen. Mit einem Fokus auf traditionelle Gewürze und historische Eleganz bringt unser Restaurant den kulinarischen Glanz des königlichen Erbes Indiens auf jeden Teller. Ein wahrhaft majestätisches kulinarisches Erlebnis erwartet Sie.“"}
           </p>
         </div>
-        <div className="btns flex mt-14 items-center justify-center gap-6">
+
+        {/* Buttons Section */}
+        <div className="btns flex flex-col sm:flex-row mt-10 lg:mt-14 items-center justify-center gap-4 sm:gap-6">
           <a href="#table">
-            <button className="flex gap-1  text-white bg-primary items-center place-content-center content-center font-jost w-[175px] h-[50px] rounded hover:bg-primary/80 transition-color duration-500 ">
+            <button className="flex gap-1 text-white bg-primary items-center justify-center font-jost w-[160px] sm:w-[175px] h-[45px] sm:h-[50px] rounded hover:bg-primary/80 transition-color duration-500">
               {language == "en" ? "RESERVE TABLE" : "TISCH RESERVIEREN"}
             </button>
           </a>
           <button
             onClick={() => navigate("/menu")}
-            className="flex gap-1 text-white bg-primary items-center place-content-center content-center font-jost w-[175px] h-[50px] rounded hover:bg-primary/80 transition-color duration-500 "
+            className="flex gap-1 text-white bg-primary items-center justify-center font-jost w-[160px] sm:w-[175px] h-[45px] sm:h-[50px] rounded hover:bg-primary/80 transition-color duration-500"
           >
             {language == "en" ? "ORDER NOW" : "ONLINE BESTELLEN"}
           </button>
         </div>
       </section>
       <section className="bg-[#78303C] relative pt-[7vw] pb-[5vw] text-white">
-        <img src={assets.highQualityBorder} className="absolute top-0" alt="" />
-        <h2 className=" text-5xl font-jost font-semibold max-w-3xl text-center mx-auto leading-normal">
+        <img
+          src={assets.highQualityBorder}
+          className="absolute top-0 w-full"
+          alt=""
+        />
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-jost font-semibold max-w-3xl text-center mx-auto leading-normal px-4">
           {language == "en" ? "ART ON WALLS," : "KUNST AN DEN WÄNDEN,"}
           <br />
           {language == "en"
             ? "FLAVORS ON THE PLATE"
             : "GESCHMACK AUF DEM TELLER"}
         </h2>
-        <div className="flex gap-8 px-16 py-24">
-          {highQualitySection[language].map((data, index) => {
-            return (
-              <div
-                className={`basis-1/4 text-center relative ${
-                  index % 2 == 0 ? "top-[-80px]" : "top-[80px]"
-                }`}
-              >
-                <img src={data.img} alt="" className="rounded-t-full" />
-                <h3 className="mt-4 font-jost text-xl">{data.title}</h3>
-                <p className="font-jost font-light px-6 mt-2">{data.desc}</p>
-              </div>
-            );
-          })}
+        <div className="flex flex-wrap lg:flex-nowrap gap-8 px-4 py-12 lg:px-16 lg:py-24">
+          {highQualitySection[language].map((data, index) => (
+            <div
+              key={index}
+              className={`basis-full sm:basis-1/2 lg:basis-1/4 text-center relative ${
+                index % 2 === 0
+                  ? "sm:top-[-40px] lg:top-[-80px]"
+                  : "sm:top-[40px] lg:top-[80px]"
+              }`}
+            >
+              <img src={data.img} alt="" className="rounded-t-full mx-auto" />
+              <h3 className="mt-4 font-jost text-lg sm:text-xl">
+                {data.title}
+              </h3>
+              <p className="font-jost font-light px-4 sm:px-6 mt-2 text-sm sm:text-base">
+                {data.desc}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
       <section
         id="table"
-        className="relative bg-[#FCF8DF] overflow-hidden  flex items-center py-20"
+        className="relative bg-[#FCF8DF] overflow-hidden flex items-center py-20"
       >
         <img
           src={assets.mandal}
@@ -357,17 +371,19 @@ const Home = () => {
           alt=""
           className="transform absolute top-[50%] right-0 translate-y-[-50%] translate-x-[50%] h-3/5"
         />
-        <div className="flex items-stretch bg-white w-[80%] max-h-full mx-auto z-2 relative">
-          <div className="form-container basis-3/5  py-10 px-6">
-            <h2 className="text-[#554539] font-jost font-bold text-4xl text-center mb-4">
+        <div className="flex flex-wrap lg:flex-nowrap bg-white w-[90%] lg:w-[80%] max-h-full mx-auto z-2 relative">
+          {/* Form Container */}
+          <div className="form-container basis-full lg:basis-3/5 py-10 px-6">
+            <h2 className="text-[#554539] font-jost font-bold text-2xl sm:text-3xl lg:text-4xl text-center mb-4">
               {language == "en" ? "Reserve A Table" : "Tischreservierung"}
             </h2>
             <ReserveTableForm></ReserveTableForm>
           </div>
-          <div className="min-h-full basis-1/2 relative overflow-hidden">
+          {/* Image Container */}
+          <div className="min-h-[250px] basis-full lg:basis-1/2 relative overflow-hidden mt-8 lg:mt-0">
             <img
               src={assets.bookingImg}
-              className="block h-full top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-50%] absolute"
+              className="block w-full lg:h-full top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-50%] absolute"
               alt=""
             />
           </div>
@@ -387,44 +403,47 @@ const Home = () => {
           className="absolute inset-0 w-full h-full object-cover z-0 "
         ></video>
       </section>
-      <section className="relative pt-20">
-        <h2 className="text-5xl font-jost font-semibold text-center text-[#554539] mb-16">
+      <section className="relative w-full px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-jost font-semibold text-center text-[#554539] mb-8 sm:mb-12 lg:mb-16">
           {language == "en"
             ? "Customer's Testimonials"
             : "Unsere Kundenbewertungen"}
         </h2>
+
         <Carousel
-          className="mt-8 mx-16 mb-20"
+          className="mx-auto max-w-7xl"
           opts={{
             align: "start",
             loop: true,
           }}
         >
-          <CarouselContent>
-            {testimonials.map((data) => {
-              return (
-                <CarouselItem className=" md:basis-1/3 sm:basis-1/2">
-                  <Card>
-                    <CardContent className="pt-6 space-y-4">
-                      <StarRating rating={data.rating}></StarRating>
-                      <p className="font-jost text-lg text-[#554539]">
-                        "{data.desc}"
-                      </p>
-                    </CardContent>
-                    <CardFooter>
-                      <div className="flex items-center gap-3">
-                        <img src={data.img} className="rounded w-10" alt="" />
-                        <h3 className="font-semibold">{data.user}</h3>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </CarouselItem>
-              );
-            })}
+          <CarouselContent className="-ml-2 sm:-ml-4">
+            {testimonials.map((data) => (
+              <CarouselItem className="pl-2 sm:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+                <Card>
+                  <CardContent className="pt-6 space-y-4">
+                    <StarRating rating={data.rating}></StarRating>
+                    <p className="font-jost text-base sm:text-lg text-[#554539] line-clamp-4 sm:line-clamp-none">
+                      "{data.desc}"
+                    </p>
+                  </CardContent>
+                  <CardFooter>
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={data.img}
+                        className="rounded w-8 sm:w-10 h-8 sm:h-10 object-cover"
+                        alt=""
+                      />
+                      <h3 className="font-semibold">{data.user}</h3>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </CarouselItem>
+            ))}
           </CarouselContent>
-          <div className="flex items-center gap-4 justify-center">
-            <CarouselPrevious className="border-[#2D0A17] text-[#2D0A17] relative top-16 left-0 right-0 bottom-0" />
-            <CarouselNext className="border-[#2E0A16] bg-primary text-white relative top-16 left-0 right-0 bottom-0" />
+          <div className="flex items-center gap-4 justify-center mt-8">
+            <CarouselPrevious className="border-[#2D0A17] text-[#2D0A17] relative static sm:absolute" />
+            <CarouselNext className="border-[#2E0A16] bg-primary text-white relative static sm:absolute" />
           </div>
         </Carousel>
       </section>
@@ -446,22 +465,24 @@ const Home = () => {
         </button>
         <img src={assets.giftCardBottom} className="absolute bottom-0" alt="" />
       </section>
-      <section className="relative px-20 mb-[-210px] z-10 pt-24">
-        <div className="bg-[--accent-color] px-8  mx-auto py-16">
-          <h2 className="font-jost font-bold text-5xl text-center mb-8 text-[#554539]">
+      <section className="relative px-6 lg:px-20 mb-[-210px] z-10 pt-16 lg:pt-24">
+        <div className="bg-[--accent-color] px-4 lg:px-8 mx-auto py-12 lg:py-16 max-w-screen-xl">
+          <h2 className="font-jost font-bold text-3xl sm:text-4xl lg:text-5xl text-center mb-6 lg:mb-8 text-[#554539]">
             {language == "en" ? "Contact Us" : "Kontakt"}
           </h2>
-          <div className="flex gap-4">
-            <div className="map basis-1/2">
+          <div className="flex flex-wrap lg:flex-nowrap gap-6 lg:gap-4">
+            {/* Map Section */}
+            <div className="map basis-full lg:basis-1/2 h-[300px] sm:h-[400px] lg:h-[500px]">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2651.559532861968!2d8.960021176474669!3d48.34977107126759!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479a025caee3deef%3A0x48134b05d76cf695!2sMuseum%20Restaurant!5e0!3m2!1sen!2sin!4v1730740243911!5m2!1sen!2sin"
-                className=" w-full h-full border-0"
+                className="w-full h-full border-0"
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               ></iframe>
             </div>
-            <div className="form-container basis-1/2">
+            {/* Contact Form Section */}
+            <div className="form-container basis-full lg:basis-1/2">
               <ContactForm btnPrimary={true}></ContactForm>
             </div>
           </div>

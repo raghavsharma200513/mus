@@ -105,10 +105,18 @@ function ContactUs() {
             : "Folgen Sie uns auf Social Media für die neuesten Highlights:"}
         </p>
         <div className="socials-footer flex justify-center gap-3">
-          <a href="#" className="block bg-primary/20 rounded-full p-2">
+          <a
+            href="https://www.facebook.com/profile.php?id=61554941725773"
+            className="block bg-primary/20 rounded-full p-2"
+             target="_blank"
+          >
             <Facebook fill="hsl(var(--primary))" width={20}></Facebook>
           </a>
-          <a href="#" className="block bg-primary/20 rounded-full p-2">
+          <a
+            href="https://www.instagram.com/museum.hechingen/"
+            className="block bg-primary/20 rounded-full p-2"
+             target="_blank"
+          >
             <Instagram fill="hsl(var(--primary))" width={20}></Instagram>
           </a>
         </div>

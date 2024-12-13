@@ -12,7 +12,7 @@ function Layout() {
         <Outlet></Outlet>
         <ScrollAndSocialButtons />
       </main>
-      <footer>
+      <footer className="mt-24 sm:mt-0">
         <Footer></Footer>
       </footer>
     </>
