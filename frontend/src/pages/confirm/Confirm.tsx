@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import LanguageContext from "@/context/LanguageContext";
 
 interface OrderAddress {
   fullName: string;
@@ -47,12 +48,18 @@ interface OrderDetails {
 
 const OrderConfirmation: React.FC = () => {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
-  console.log("orderDetails", orderDetails);
+  // console.log("orderDetails", orderDetails);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [paymentVerifying, setPaymentVerifying] = useState(false);
   const location = useLocation();
+  const context = useContext(LanguageContext);
+
+  if (!context) {
+    throw new Error("LanguageSelector must be used within a LanguageProvider");
+  }
+  const { language } = context;
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -166,11 +173,14 @@ const OrderConfirmation: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-[#2E0A16] mb-2">
-            Order Confirmed!
+            {language == "en"
+              ? "Order Confirmed!"
+              : "Vielen Dank für Ihre Bestellung!"}
           </h1>
           <p className="text-gray-600">
-            Thank you for your order. We'll send updates about your order to
-            your email.
+            {language == "en"
+              ? "Thank you for your order. We'll send updates about your order to your email."
+              : "Wir haben Ihre Bestellung erhalten und bearbeiten diese gerade. Sie erhalten Updates zu Ihrer Bestellung per E-Mail."}
           </p>
         </div>
 
@@ -178,24 +188,36 @@ const OrderConfirmation: React.FC = () => {
           {/* Rest of your existing JSX remains exactly the same */}
           {/* Order Status and Details */}
           <div className="border-b pb-6">
-            <h2 className="text-xl font-semibold mb-4">Order Details</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {language == "en"
+                ? "Order Details"
+                : "Informationen zur Bestellung"}
+            </h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-gray-600">Order ID</p>
+                <p className="text-gray-600">
+                  {language == "en" ? "Order ID" : "Bestellnummer"}
+                </p>
                 <p className="font-medium">{orderDetails._id}</p>
               </div>
               <div>
-                <p className="text-gray-600">Order Date</p>
+                <p className="text-gray-600">
+                  {language == "en" ? "Order Date" : "Bestelleingang"}
+                </p>
                 <p className="font-medium">
                   {formatDate(orderDetails.createdAt)}
                 </p>
               </div>
               <div>
-                <p className="text-gray-600">Status</p>
+                <p className="text-gray-600">
+                  {language == "en" ? "Status" : "Status"}
+                </p>
                 <p className="font-medium capitalize">{orderDetails.status}</p>
               </div>
               <div>
-                <p className="text-gray-600">Payment Method</p>
+                <p className="text-gray-600">
+                  {language == "en" ? "Payment Method" : "Zahlungsart"}
+                </p>
                 <p className="font-medium">
                   {orderDetails.paymentMethod === "cod"
                     ? "Cash on Delivery"
@@ -209,7 +231,9 @@ const OrderConfirmation: React.FC = () => {
 
           {/* Order Items */}
           <div className="border-b pb-6">
-            <h2 className="text-xl font-semibold mb-4">Order Items</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {language == "en" ? " Order Items" : "Artikel"}
+            </h2>
             <div className="space-y-4">
               {orderDetails.items.map((item) => (
                 <div
@@ -227,7 +251,7 @@ const OrderConfirmation: React.FC = () => {
                         <ul className="text-sm text-gray-600">
                           {item.addOns.map((addon) => (
                             <li className="ml-2" key={addon._id}>
-                              {addon.name} (€{addon.price}) X {addon.quantity}
+                              {addon.name} ({addon.price}€) X {addon.quantity}
                             </li>
                           ))}
                         </ul>
@@ -235,7 +259,6 @@ const OrderConfirmation: React.FC = () => {
                     )}
                   </div>
                   <p className="font-medium">
-                    €
                     {(
                       (item.variants[0].price +
                         item.addOns.reduce(
@@ -244,6 +267,7 @@ const OrderConfirmation: React.FC = () => {
                         )) *
                       item.quantity
                     ).toFixed(2)}
+                    €
                   </p>
                 </div>
               ))}
@@ -252,7 +276,9 @@ const OrderConfirmation: React.FC = () => {
 
           {/* Delivery Address */}
           <div className="border-b pb-6">
-            <h2 className="text-xl font-semibold mb-4">Delivery Address</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {language == "en" ? "Delivery Address" : "Lieferadresse"}
+            </h2>
             <div>
               <p className="font-medium">{orderDetails.address.fullName}</p>
               <p>{orderDetails.address.phone}</p>
@@ -270,27 +296,37 @@ const OrderConfirmation: React.FC = () => {
 
           {/* Payment Summary */}
           <div>
-            <h2 className="text-xl font-semibold mb-4">Payment Summary</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {language == "en" ? " Payment Summary" : "Zahlungsübersicht"}
+            </h2>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span>€{orderDetails.subtotal}</span>
+                <span className="text-gray-600">
+                  {language == "en" ? "Subtotal" : "Zwischensumme"}
+                </span>
+                <span>{orderDetails.subtotal}€</span>
               </div>
               {Number(orderDetails.discount) > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Discount</span>
+                  <span className="text-gray-600">
+                    {language == "en" ? "Discount" : "Rabatt"}
+                  </span>
                   <span className="text-[#C9A07B]">
-                    -€{orderDetails.discount}
+                    -{orderDetails.discount}€
                   </span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-600">Delivery Fee</span>
-                <span className="text-[#C9A07B]">Free</span>
+                <span className="text-gray-600">
+                  {language == "en" ? "Delivery Fee" : "Liefergebühr"}
+                </span>
+                <span className="text-[#C9A07B]">
+                  {language == "en" ? "Free" : "Gratis"}
+                </span>
               </div>
               <div className="flex justify-between pt-2 border-t font-semibold">
-                <span>Total</span>
-                <span>€{orderDetails.orderTotal}</span>
+                <span>{language == "en" ? "Total" : "Gesamtbetrag"}</span>
+                <span>{orderDetails.orderTotal}€</span>
               </div>
             </div>
           </div>

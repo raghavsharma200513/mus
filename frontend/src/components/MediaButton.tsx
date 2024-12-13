@@ -17,9 +17,9 @@ const ScrollAndSocialButtons: React.FC = () => {
 
   // Social media link handlers
   const socialLinks: Record<SocialPlatform, string> = {
-    instagram: "https://www.instagram.com/",
+    instagram: "https://www.instagram.com/museum.hechingen/",
     youtube: "https://www.youtube.com/",
-    linkedin: "https://www.linkedin.com/in/",
+    linkedin: "https://www.facebook.com/profile.php?id=61554941725773",
     twitter: "https://twitter.com/",
   };
 

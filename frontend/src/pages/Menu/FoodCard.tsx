@@ -118,8 +118,8 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
   };
 
   return (
-    <div className="bg-[#2E0A16] text-white rounded-t-[60px] rounded-b-lg shadow-lg w-96 mb-36">
-      <div className="relative w-full h-[200px] flex justify-center">
+    <div className="bg-[#2E0A16] text-white rounded-t-[60px] rounded-b-lg shadow-lg w-80 mb-36 sm:w-96">
+      <div className="relative w-full h-[200px] flex justify-center px-">
         <img
           src={imageUrl}
           alt={data.name}
@@ -139,11 +139,17 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
           className="cursor-pointer flex bg-[#C9A07B] justify-center items-center gap-2 rounded-md w-[35%] py-3"
         >
           <span className="text-[16px] font-normal">
-            €{data.discountedPrice}
+            €
+            {data.discountedPrice === data.actualPrice
+              ? data.actualPrice
+              : data.discountedPrice}
           </span>
-          <span className="text-[#E4CFBD] line-through text-[11px] font-normal">
-            €{data.actualPrice}
-          </span>
+
+          {data.discountedPrice !== data.actualPrice && (
+            <span className="text-[#E4CFBD] line-through text-[11px] font-normal">
+              €{data.actualPrice}
+            </span>
+          )}
         </div>
       </div>
 

@@ -8,7 +8,7 @@ function Layout() {
       <header className="sticky top-0 z-20">
         <Navbar />
       </header>
-      <main>
+      <main className="pt-[88px]">
         <Outlet></Outlet>
         <ScrollAndSocialButtons />
       </main>

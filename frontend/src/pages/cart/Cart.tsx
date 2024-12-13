@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { assets } from "@/assets/assets";
 import { useNavigate } from "react-router-dom";
+import LanguageContext from "@/context/LanguageContext";
 
 interface AddOn {
   _id: string;
@@ -43,6 +44,12 @@ const Cart = () => {
   const navigate = useNavigate();
   const [cartData, setCartData] = useState<CartData | null>(null);
   console.log("cartData", cartData);
+  const context = useContext(LanguageContext);
+
+  if (!context) {
+    throw new Error("LanguageSelector must be used within a LanguageProvider");
+  }
+  const { language } = context;
   // const imageUrl = data.image
   //   ? `${import.meta.env.VITE_BACKEND_URL}${data.image}`
   //   : assets.menu5;
@@ -158,15 +165,20 @@ const Cart = () => {
   return (
     <main className="mb-24 px-4 md:px-8 lg:px-0">
       <div className="page-title mb-6 md:mb-10">
-        <h1 className="text-2xl md:text-3xl font-bold">Cart</h1>
-        <h2 className="text-sm md:text-base text-gray-500">HOME / CART</h2>
+        <h1 className="text-2xl md:text-3xl font-bold">
+          {language == "en" ? "Cart" : "Warenkorb"}
+        </h1>
+        <h2 className="text-sm md:text-base text-gray-500">
+          HOME / CART
+          {/* {language == "en" ? "Items" : "Artikel"} */}
+        </h2>
       </div>
 
       <div className="flex flex-col mx-auto max-w-7xl">
         <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold mb-6 md:mb-10">
-          Cart{" "}
+          {language == "en" ? "Cart" : "In Ihrem Warenkorb"}{" "}
           <span className="text-lg md:text-xl lg:text-2xl text-[#C9A07B]">
-            ({cartData.items.length} Items)
+            ({cartData.items.length} {language == "en" ? "Items" : "Artikel"})
           </span>
         </h2>
 
@@ -206,7 +218,7 @@ const Cart = () => {
                       <div className="space-y-1">
                         {item.addOns.map((addOn) => (
                           <p key={addOn._id} className="text-sm text-gray-600">
-                            {addOn.name} (×{addOn.quantity}) - €{addOn.price}
+                            {addOn.name} (×{addOn.quantity}) - {addOn.price}€
                           </p>
                         ))}
                       </div>
@@ -241,10 +253,15 @@ const Cart = () => {
                         onClick={() => removeItem(item._id)}
                         disabled={updating === item._id}
                       >
-                        {updating === item._id ? "Removing..." : "Remove"}
+                        {updating === item._id
+                          ? language == "en"
+                            ? "Removing..."
+                            : "Entfernen..."
+                          : language == "en"
+                          ? "Remove"
+                          : "Entfernen"}
                       </button>
                       <span className="ml-auto text-lg font-bold">
-                        €
                         {
                           // First calculate price for single item with add-ons
                           (
@@ -258,6 +275,7 @@ const Cart = () => {
                             item.quantity
                           ).toFixed(2)
                         }
+                        €
                       </span>
                     </div>
                   </div>
@@ -268,23 +286,25 @@ const Cart = () => {
 
           <div className="w-full lg:w-[465px] bg-white rounded-lg p-6 md:p-8 border-2 border-[#E5E5E5]">
             <h2 className="text-xl md:text-2xl font-semibold mb-6">
-              Order Summary
+              {language == "en" ? "Order Summary" : "Warenkorbübersicht"}
             </h2>
 
             <div className="space-y-4 border-b border-dashed pb-4">
               <div className="flex justify-between text-[#554539]">
-                <span>Price</span>
-                <span className="font-semibold">€{subtotal.toFixed(2)}</span>
+                <span>{language == "en" ? "Price" : "Zwischensumme"}</span>
+                <span className="font-semibold">{subtotal.toFixed(2)}€</span>
               </div>
               <div className="flex justify-between text-[#554539]">
-                <span>Discount</span>
+                <span>{language == "en" ? "Discount" : "Rabatt"}</span>
                 <span className="font-semibold text-green-600">
-                  -€{discount.toFixed(2)}
+                  -{discount.toFixed(2)}€
                 </span>
               </div>
               <div className="flex justify-between text-[#554539]">
-                <span>Shipping</span>
-                <span className="font-semibold text-[#C9A07B]">Free</span>
+                <span>{language == "en" ? "Shipping" : "Liefergebühr"}</span>
+                <span className="font-semibold text-[#C9A07B]">
+                  {language == "en" ? "Free" : "Gratis"}
+                </span>
               </div>
             </div>
 
@@ -325,10 +345,10 @@ const Cart = () => {
 
             <div className="border-t mt-6 pt-4 flex justify-between items-center">
               <span className="text-lg md:text-xl font-bold text-[#2E0A16]">
-                Total
+                {language == "en" ? "Total" : "Gesamtbetrag"}
               </span>
               <span className="text-lg md:text-xl font-bold">
-                €{total.toFixed(2)}
+                {total.toFixed(2)}€
               </span>
             </div>
 
@@ -336,7 +356,7 @@ const Cart = () => {
               onClick={() => navigate(`/review?cid=${cartData._id}&cpn=`)}
               className="w-full bg-[#2E0A16] text-white py-3 rounded-lg mt-6 font-semibold text-sm md:text-base hover:bg-[#4a1627] transition-colors"
             >
-              Proceed to Checkout
+              {language == "en" ? "Proceed to Checkout" : "Artikel"}
             </button>
           </div>
         </div>

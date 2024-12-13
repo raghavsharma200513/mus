@@ -220,6 +220,8 @@ class AuthController {
       if (registerData.type === "guest") {
         const randum = Math.floor(Math.random() * 1000000000);
         // Generate a random guest name
+        console.log(randum);
+
         console.log("guest");
 
         registerData.name = `Guest_${randum}`;
@@ -257,6 +259,7 @@ class AuthController {
         password: hashedPassword,
         mobile_number: registerData.mobile_number || "",
         type: registerData.type,
+        role: registerData.role,
         approved: true,
       });
 

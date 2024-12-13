@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { X } from "lucide-react";
 
-// Interfaces for type safety
 interface AddOn {
   name: string;
   price: string;
@@ -43,6 +43,7 @@ const MenuItemManagement: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [menuData, setMenuData] = useState<MenuData>({
     name: "",
     actualPrice: "",
@@ -50,7 +51,7 @@ const MenuItemManagement: React.FC = () => {
     description: "",
     category: "",
     image: null,
-    addOns: [{ name: "", price: "" }],
+    addOns: [],
     variants: [{ name: "", price: "" }],
   });
 
@@ -113,6 +114,20 @@ const MenuItemManagement: React.FC = () => {
     setMenuData((prev) => ({ ...prev, variants: newVariants }));
   };
 
+  const removeAddOn = (index: number) => {
+    setMenuData((prev) => ({
+      ...prev,
+      addOns: prev.addOns.filter((_, i) => i !== index),
+    }));
+  };
+
+  const removeVariant = (index: number) => {
+    setMenuData((prev) => ({
+      ...prev,
+      variants: prev.variants.filter((_, i) => i !== index),
+    }));
+  };
+
   const addAddOnField = () => {
     setMenuData((prev) => ({
       ...prev,
@@ -131,10 +146,8 @@ const MenuItemManagement: React.FC = () => {
     e.preventDefault();
     const formData = new FormData();
 
-    // Append all fields
     (Object.keys(menuData) as Array<keyof MenuData>).forEach((key) => {
       if (key === "addOns" || key === "variants") {
-        // Stringify complex objects
         formData.append(key, JSON.stringify(menuData[key]));
       } else if (key === "image" && menuData[key]) {
         formData.append("image", menuData[key] as File);
@@ -157,6 +170,8 @@ const MenuItemManagement: React.FC = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
       fetchMenuItems();
       resetForm();
     } catch (error) {
@@ -172,7 +187,7 @@ const MenuItemManagement: React.FC = () => {
       description: "",
       category: "",
       image: null,
-      addOns: [{ name: "", price: "" }],
+      addOns: [],
       variants: [{ name: "", price: "" }],
     });
     setEditingItem(null);
@@ -195,6 +210,13 @@ const MenuItemManagement: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+      {showSuccess && (
+        <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          <span className="font-medium">Success!</span> Menu item saved
+          successfully.
+        </div>
+      )}
+
       <div className="bg-white shadow-md rounded-lg p-6">
         <h2 className="text-2xl font-semibold mb-4">
           {editingItem ? "Edit Menu Item" : "Add Menu Item"}
@@ -264,24 +286,33 @@ const MenuItemManagement: React.FC = () => {
           <div className="space-y-2">
             <h3 className="font-semibold">Add-ons</h3>
             {menuData.addOns.map((addon, index) => (
-              <div key={index} className="grid grid-cols-2 gap-2">
-                <input
-                  value={addon.name}
-                  onChange={(e) =>
-                    handleAddOnChange(index, "name", e.target.value)
-                  }
-                  placeholder="Add-on Name"
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-                <input
-                  type="number"
-                  value={addon.price}
-                  onChange={(e) =>
-                    handleAddOnChange(index, "price", e.target.value)
-                  }
-                  placeholder="Price"
-                  className="w-full px-3 py-2 border rounded-md"
-                />
+              <div key={index} className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2 flex-1">
+                  <input
+                    value={addon.name}
+                    onChange={(e) =>
+                      handleAddOnChange(index, "name", e.target.value)
+                    }
+                    placeholder="Add-on Name"
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <input
+                    type="number"
+                    value={addon.price}
+                    onChange={(e) =>
+                      handleAddOnChange(index, "price", e.target.value)
+                    }
+                    placeholder="Price"
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeAddOn(index)}
+                  className="p-2 text-red-500 hover:text-red-700"
+                >
+                  <X size={20} />
+                </button>
               </div>
             ))}
             <button
@@ -296,24 +327,33 @@ const MenuItemManagement: React.FC = () => {
           <div className="space-y-2">
             <h3 className="font-semibold">Variants</h3>
             {menuData.variants.map((variant, index) => (
-              <div key={index} className="grid grid-cols-2 gap-2">
-                <input
-                  value={variant.name}
-                  onChange={(e) =>
-                    handleVariantChange(index, "name", e.target.value)
-                  }
-                  placeholder="Variant Name"
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-                <input
-                  type="number"
-                  value={variant.price}
-                  onChange={(e) =>
-                    handleVariantChange(index, "price", e.target.value)
-                  }
-                  placeholder="Price"
-                  className="w-full px-3 py-2 border rounded-md"
-                />
+              <div key={index} className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2 flex-1">
+                  <input
+                    value={variant.name}
+                    onChange={(e) =>
+                      handleVariantChange(index, "name", e.target.value)
+                    }
+                    placeholder="Variant Name"
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <input
+                    type="number"
+                    value={variant.price}
+                    onChange={(e) =>
+                      handleVariantChange(index, "price", e.target.value)
+                    }
+                    placeholder="Price"
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeVariant(index)}
+                  className="p-2 text-red-500 hover:text-red-700"
+                >
+                  <X size={20} />
+                </button>
               </div>
             ))}
             <button

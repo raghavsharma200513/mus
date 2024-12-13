@@ -1,38 +1,52 @@
-import { ContactDetailsProps } from "@/Interface";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+export interface ContactDetailsProps {
+  title: string;
+  content: string;
+}
 
 const ContactDetailsBG: React.FC<ContactDetailsProps> = ({
   title,
   content,
 }) => {
-  const containerRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({
+    pSize: 16,
+    lineHeight: 16,
+    h2Size: 16,
+    marginBottom: 0,
+  });
 
   useEffect(() => {
-    const updateFontSize = () => {
+    const updateDimensions = () => {
       if (containerRef.current) {
-        var containerWidth = containerRef.current.offsetWidth;
-        setPSize((containerWidth * 4.5) / 100);
-        setLineHeight((containerWidth * 6) / 100);
-        setH2Size((containerWidth * 8.6725) / 100);
+        const containerWidth = containerRef.current.offsetWidth;
+
+        setDimensions({
+          pSize: (containerWidth * 4.5) / 100,
+          lineHeight: (containerWidth * 6) / 100,
+          h2Size: (containerWidth * 8.6725) / 100,
+          marginBottom: -containerWidth * 0.4,
+        });
       }
     };
 
-    updateFontSize(); // Set initial font size
-    window.addEventListener("resize", updateFontSize); // Update on resize
+    // Initial sizing
+    updateDimensions();
 
-    return () => window.removeEventListener("resize", updateFontSize);
+    // Add resize listener
+    window.addEventListener("resize", updateDimensions);
+
+    // Cleanup listener
+    return () => window.removeEventListener("resize", updateDimensions);
   }, []);
-
-  const [pSize, setPSize] = useState(16);
-  const [lineHeight, setLineHeight] = useState(16);
-  const [h2Size, setH2Size] = useState(16);
 
   return (
     <div
       ref={containerRef}
-      className="relative flex-1 "
+      className="relative flex-1 w-full"
       style={{
-        marginBottom: Number(-containerRef.current?.offsetWidth * 0.4) + "px",
+        // marginBottom: `${dimensions.marginBottom}px`,
       }}
     >
       <svg
@@ -103,29 +117,28 @@ const ContactDetailsBG: React.FC<ContactDetailsProps> = ({
             stroke-miterlimit="10"
           />
         </g>
-        <defs></defs>
       </svg>
-      <div className="absolute z-10 top-[20%] text-[--primary-color] left-[50%] font-jost translate-x-[-50%] h-[60%] w-[61%] flex-col flex overflow-hidden text-center details">
+
+      <div className="absolute z-10 top-1/4 text-[--primary-color] left-1/2 -translate-x-1/2 -translate-y-6  h-3/5 w-[74%] flex flex-col  text-center px-4 mb-10">
         <h2
-          className="font-semibold  "
+          className="font-semibold text-center"
           style={{
-            fontSize: h2Size + "px",
+            fontSize: `${dimensions.h2Size}px`,
           }}
         >
           {title}
         </h2>
         <p
-          dangerouslySetInnerHTML={{
-            __html: content,
-          }}
-          className="flex-1 flex justify-center items-center flex-col"
+          dangerouslySetInnerHTML={{ __html: content }}
+          className="flex-1 flex justify-center items-center flex-col text-center"
           style={{
-            fontSize: pSize + "px",
-            lineHeight: lineHeight + "px",
+            fontSize: `${dimensions.pSize}px`,
+            lineHeight: `${dimensions.lineHeight}px`,
           }}
         />
       </div>
     </div>
   );
 };
+
 export default ContactDetailsBG;

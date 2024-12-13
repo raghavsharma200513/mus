@@ -125,7 +125,7 @@ function Menu(): JSX.Element {
       </div>
       <div className="content min-h-[calc(80vh)] flex-col text-[#554939] gap-6 text-lg font-jost font-medium flex items-center justify-center">
         {/* Category Filters */}
-        <div className="flex gap-4 my-10">
+        <div className="flex flex-wrap gap-4 my-10 justify-center sm:justify-start">
           <button
             className={`px-4 py-2 rounded-full cursor-pointer ${
               selectedCategory === "All"

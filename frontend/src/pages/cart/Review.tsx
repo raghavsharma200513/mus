@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Modal from "../../components/Modal";
 import { assets } from "@/assets/assets";
+import LanguageContext from "@/context/LanguageContext";
 
 interface Variant {
   name: string;
@@ -91,6 +92,12 @@ const Review: React.FC = () => {
   const [processingOrder, setProcessingOrder] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const context = useContext(LanguageContext);
+
+  if (!context) {
+    throw new Error("LanguageSelector must be used within a LanguageProvider");
+  }
+  const { language } = context;
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -176,7 +183,7 @@ const Review: React.FC = () => {
 
       if (subtotal < couponData.minimumOrderValue) {
         setCouponError(
-          `Minimum order value of €${couponData.minimumOrderValue} required`
+          `Minimum order value of ${couponData.minimumOrderValue}€ required`
         );
         return;
       }
@@ -314,9 +321,13 @@ const Review: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
-          <h2 className="text-2xl font-semibold mb-6">Order Review</h2>
+          <h2 className="text-2xl font-semibold mb-6">
+            {language == "en" ? "Order Review" : "Bestellübersicht"}
+          </h2>
           <div className="bg-white rounded-lg p-6 shadow-sm border mb-6">
-            <h3 className="text-lg font-medium mb-4">Order Items</h3>
+            <h3 className="text-lg font-medium mb-4">
+              {language == "en" ? "Order Items" : "Artikel"}
+            </h3>
             <div className="space-y-4">
               {cartData?.items.map((item: CartItem) => {
                 const imageUrl = item.menuItem.image
@@ -338,7 +349,7 @@ const Review: React.FC = () => {
                     <div className="flex-1">
                       <h4 className="font-medium">{item.menuItem.name}</h4>
                       <p className="text-sm text-gray-600">
-                        Size: {item.variant.name} (€{item.variant.price})
+                        Size: {item.variant.name} ({item.variant.price}€)
                       </p>
                       <p className="text-sm text-gray-600">
                         Quantity: {item.quantity}
@@ -349,7 +360,7 @@ const Review: React.FC = () => {
                           <ul className="text-sm text-gray-600">
                             {item.addOns.map((addon) => (
                               <li key={addon._id}>
-                                {addon.name} (€{addon.price} × {addon.quantity})
+                                {addon.name} ({addon.price}€ × {addon.quantity})
                               </li>
                             ))}
                           </ul>
@@ -358,7 +369,6 @@ const Review: React.FC = () => {
                     </div>
                     <div className="text-right">
                       <p className="font-medium">
-                        €
                         {
                           // First calculate price for single item with add-ons
                           (
@@ -372,6 +382,7 @@ const Review: React.FC = () => {
                             item.quantity
                           ).toFixed(2)
                         }
+                        €
                       </p>
                     </div>
                   </div>
@@ -380,7 +391,10 @@ const Review: React.FC = () => {
             </div>
           </div>
           <div className="bg-white rounded-lg p-6 shadow-sm border mb-6">
-            <h3 className="text-lg font-medium mb-4">Delivery Address</h3>
+            <h3 className="text-lg font-medium mb-4">
+              {" "}
+              {language == "en" ? "Delivery Address" : "Lieferadresse"}
+            </h3>
             {selectedAddress ? (
               <div className="mb-4">
                 <p>{selectedAddress.fullName}</p>
@@ -453,13 +467,15 @@ const Review: React.FC = () => {
             className="w-full mt-4 bg-[#2E0A16] text-white py-2 rounded-lg font-semibold hover:bg-[#4a1627] transition-colors"
             onClick={() => navigate("/add-address")}
           >
-            Add New Address
+            {language == "en" ? "Add New Address" : "Neue Adresse Hinzufügen"}
           </button>
         </div>
 
         <div className="w-full lg:w-[400px]">
           <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <h3 className="text-xl font-semibold mb-6">Payment Summary</h3>
+            <h3 className="text-xl font-semibold mb-6">
+              {language == "en" ? "Payment Summary" : "Zahlungsübersicht"}
+            </h3>
             <div className="mb-4">
               <input
                 type="text"
@@ -472,7 +488,7 @@ const Review: React.FC = () => {
                 className="w-full mt-2 bg-[#2E0A16] text-white py-2 rounded-lg font-semibold hover:bg-[#4a1627]"
                 onClick={applyCoupon}
               >
-                Apply Coupon
+                {language == "en" ? "Apply Coupon" : "Gutschein Einlösen"}
               </button>
               {couponError && (
                 <p className="mt-2 text-red-500 text-sm">{couponError}</p>
@@ -480,26 +496,38 @@ const Review: React.FC = () => {
             </div>
             <div className="space-y-4 pb-4 border-b">
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span>€{subtotal.toFixed(2)}</span>
+                <span className="text-gray-600">
+                  {language == "en" ? "Subtotal" : "Zwischensumme"}
+                </span>
+                <span>{subtotal.toFixed(2)}€</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Discount</span>
-                <span className="text-[#C9A07B]">-€{discount.toFixed(2)}</span>
+                <span className="text-gray-600">
+                  {language == "en" ? "Discount" : "Rabatt"}
+                </span>
+                <span className="text-[#C9A07B]">-{discount.toFixed(2)}€</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Delivery Fee</span>
-                <span className="text-[#C9A07B]">Free</span>
+                <span className="text-gray-600">
+                  {language == "en" ? "Delivery Fee" : "Liefergebühr"}
+                </span>
+                <span className="text-[#C9A07B]">
+                  {language == "en" ? "Free" : "Gratis"}
+                </span>
               </div>
             </div>
 
             <div className="flex justify-between py-4">
-              <span className="text-lg font-semibold">Total</span>
-              <span className="text-lg font-semibold">€{total.toFixed(2)}</span>
+              <span className="text-lg font-semibold">
+                {language == "en" ? "Total" : "Gesamtbetrag"}
+              </span>
+              <span className="text-lg font-semibold">{total.toFixed(2)}€</span>
             </div>
 
             <div className="mt-6">
-              <h4 className="font-medium mb-3">Payment Method</h4>
+              <h4 className="font-medium mb-3">
+                {language == "en" ? "Payment Method" : "Zahlungsart Auswählen"}
+              </h4>
               <div className="space-y-2">
                 <div
                   className={`p-3 border rounded-lg cursor-pointer ${
@@ -509,8 +537,14 @@ const Review: React.FC = () => {
                   }`}
                   onClick={() => setPaymentMethod("cod")}
                 >
-                  <p className="font-medium">Cash on Delivery</p>
-                  <p className="text-sm text-gray-600">Pay when you receive</p>
+                  <p className="font-medium">
+                    {language == "en" ? "Cash on Delivery" : "Nachnahme"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {language == "en"
+                      ? "Pay when you receive"
+                      : "Barzahlung bei Lieferung"}
+                  </p>
                 </div>
                 <div
                   className={`p-3 border rounded-lg cursor-pointer ${
@@ -520,8 +554,14 @@ const Review: React.FC = () => {
                   }`}
                   onClick={() => setPaymentMethod("pod")}
                 >
-                  <p className="font-medium">Pay at the Counter</p>
-                  <p className="text-sm text-gray-600">Store Pickup</p>
+                  <p className="font-medium">
+                    Pay at the Counter
+                    {language == "en" ? "ORDER NOW" : "Online Bezahlen"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Store Pickup
+                    {language == "en" ? "ORDER NOW" : "ONLINE BESTELLEN"}
+                  </p>
                 </div>
                 <div
                   className={`p-3 border rounded-lg cursor-pointer ${
@@ -531,9 +571,13 @@ const Review: React.FC = () => {
                   }`}
                   onClick={() => setPaymentMethod("online")}
                 >
-                  <p className="font-medium">Pay Online</p>
+                  <p className="font-medium">
+                    {language == "en" ? "Pay Online" : "Online Bezahlen"}
+                  </p>
                   <p className="text-sm text-gray-600">
-                    Secure payment gateway
+                    {language == "en"
+                      ? "Secure payment gateway"
+                      : "Sicheres Zahlungssystem"}
                   </p>
                 </div>
               </div>
@@ -544,7 +588,13 @@ const Review: React.FC = () => {
               onClick={handlePlaceOrder}
               disabled={processingOrder}
             >
-              {processingOrder ? "Processing..." : "Place Order"}
+              {processingOrder
+                ? language == "en"
+                  ? "Placing order..."
+                  : "Bestellung aufgeben..."
+                : language == "en"
+                ? "Place Order"
+                : "Jetzt Bestellen"}
             </button>
           </div>
         </div>

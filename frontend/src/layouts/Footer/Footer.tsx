@@ -117,10 +117,16 @@ function Footer() {
           </b>
         </p>
         <div className="socials-footer flex gap-3">
-          <a href="#" className="fb block bg-white/20 rounded-full p-2">
+          <a
+            href="https://www.facebook.com/profile.php?id=61554941725773"
+            className="fb block bg-white/20 rounded-full p-2"
+          >
             <Facebook fill="white" width={20} />
           </a>
-          <a href="#" className="inst block bg-white/20 rounded-full p-2">
+          <a
+            href="https://www.instagram.com/museum.hechingen/"
+            className="inst block bg-white/20 rounded-full p-2"
+          >
             <Instagram fill="white" width={20} />
           </a>
         </div>
