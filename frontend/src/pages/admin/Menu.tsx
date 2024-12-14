@@ -407,12 +407,12 @@ const MenuItemManagement: React.FC = () => {
                     {item.discountedPrice ? (
                       <span>
                         <span className="line-through text-gray-500">
-                          ${item.actualPrice}
+                          ${item.actualPrice.toString().replace(".", ",")}
                         </span>{" "}
-                        ${item.discountedPrice}
+                        ${item.discountedPrice.toString().replace(".", ",")}
                       </span>
                     ) : (
-                      `$${item.actualPrice}`
+                      `$${item.actualPrice.toString().replace(".", ",")}`
                     )}
                   </td>
                   <td className="px-4 py-2">

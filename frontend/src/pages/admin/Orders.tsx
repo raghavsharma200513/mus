@@ -148,7 +148,7 @@ const AllOrdersTable: React.FC = () => {
                         Add-ons:
                         {item.addOns.map((addOn) => (
                           <div key={addOn._id}>
-                            - {addOn.quantity}x {addOn.name} (€{addOn.price})
+                            - {addOn.quantity}x {addOn.name} (€{addOn.price.toString().replace(".", ",")})
                           </div>
                         ))}
                       </div>
@@ -156,7 +156,7 @@ const AllOrdersTable: React.FC = () => {
                   </div>
                 ))}
               </td>
-              <td className="p-4">€{order.orderTotal.toFixed(2)}</td>
+              <td className="p-4">€{order.orderTotal.toFixed(2).toString().replace(".", ",")}</td>
               <td className="p-4">
                 <span className="capitalize">{order.paymentMethod}</span>
               </td>
@@ -262,13 +262,13 @@ const AllOrdersTable: React.FC = () => {
                         Add-ons:
                         {item.addOns.map((addOn) => (
                           <div key={addOn._id}>
-                            - {addOn.quantity}x {addOn.name} (€{addOn.price})
+                            - {addOn.quantity}x {addOn.name} (€{addOn.price.toString().replace(".", ",")})
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
-                  <p className="font-semibold">€{item.price}</p>
+                  <p className="font-semibold">€{item.price.toString().replace(".", ",")}</p>
                 </div>
               ))}
             </div>
@@ -292,11 +292,11 @@ const AllOrdersTable: React.FC = () => {
                 <h3 className="font-semibold text-gray-700 mb-2">
                   Order Summary
                 </h3>
-                <p>Subtotal: €{selectedOrder.subtotal}</p>
+                <p>Subtotal: €{selectedOrder.subtotal.toString().replace(".", ",")}</p>
                 <p>
                   Total:{" "}
                   <span className="text-xl font-bold text-green-600">
-                    €{selectedOrder.orderTotal}
+                    €{selectedOrder.orderTotal.toString().replace(".", ",")}
                   </span>
                 </p>
               </div>

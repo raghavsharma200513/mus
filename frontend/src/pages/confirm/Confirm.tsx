@@ -251,7 +251,9 @@ const OrderConfirmation: React.FC = () => {
                         <ul className="text-sm text-gray-600">
                           {item.addOns.map((addon) => (
                             <li className="ml-2" key={addon._id}>
-                              {addon.name} ({addon.price}€) X {addon.quantity}
+                              {addon.name} (
+                              {addon.price.toString().replace(".", ",")}€) X{" "}
+                              {addon.quantity}
                             </li>
                           ))}
                         </ul>
@@ -266,7 +268,10 @@ const OrderConfirmation: React.FC = () => {
                           0
                         )) *
                       item.quantity
-                    ).toFixed(2)}
+                    )
+                      .toFixed(2)
+                      .toString()
+                      .replace(".", ",")}
                     €
                   </p>
                 </div>
@@ -304,7 +309,9 @@ const OrderConfirmation: React.FC = () => {
                 <span className="text-gray-600">
                   {language == "en" ? "Subtotal" : "Zwischensumme"}
                 </span>
-                <span>{orderDetails.subtotal}€</span>
+                <span>
+                  {orderDetails.subtotal.toString().replace(".", ",")}€
+                </span>
               </div>
               {Number(orderDetails.discount) > 0 && (
                 <div className="flex justify-between">
@@ -312,7 +319,7 @@ const OrderConfirmation: React.FC = () => {
                     {language == "en" ? "Discount" : "Rabatt"}
                   </span>
                   <span className="text-[#C9A07B]">
-                    -{orderDetails.discount}€
+                    -{orderDetails.discount.toString().replace(".", ",")}€
                   </span>
                 </div>
               )}
@@ -326,7 +333,9 @@ const OrderConfirmation: React.FC = () => {
               </div>
               <div className="flex justify-between pt-2 border-t font-semibold">
                 <span>{language == "en" ? "Total" : "Gesamtbetrag"}</span>
-                <span>{orderDetails.orderTotal}€</span>
+                <span>
+                  {orderDetails.orderTotal.toString().replace(".", ",")}€
+                </span>
               </div>
             </div>
           </div>

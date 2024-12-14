@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import classes from "./Gallery.module.css";
+import LanguageContext from "@/context/LanguageContext";
 
 interface OrderDetails {
   _id: string;
@@ -8,6 +9,13 @@ interface OrderDetails {
 }
 
 function Gallery() {
+  const context = useContext(LanguageContext);
+
+  if (!context) {
+    throw new Error("LanguageSelector must be used within a LanguageProvider");
+  }
+  const { language } = context;
+
   const [gallery, setGallery] = useState<OrderDetails[]>([]); // Changed to an array of OrderDetails
   console.log(gallery);
 
@@ -29,7 +37,7 @@ function Gallery() {
   return (
     <main>
       <div className="page-title">
-        <h1>Gallery</h1>
+        <h1>{language == "en" ? "Gallery" : "Galerie"}</h1>
         <h2>HOME / GALLERY</h2>
       </div>
       <div className="gallery-grid-container min-h-[calc(50vh)] flex-col text-[#554939] text-lg gap-8 font-jost font-medium flex items-center justify-center my-12 mx-4">

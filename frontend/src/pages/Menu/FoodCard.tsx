@@ -70,6 +70,8 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
       alert("Please select a style/variant");
       return;
     }
+    // let a = "a";
+    // console.log(a.toString().replace(".", ","));
 
     setIsLoading(true);
 
@@ -141,13 +143,13 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
           <span className="text-[16px] font-normal">
             €
             {data.discountedPrice === data.actualPrice
-              ? data.actualPrice
-              : data.discountedPrice}
+              ? data.actualPrice.toString().replace(".", ",")
+              : data.discountedPrice.toString().replace(".", ",")}
           </span>
 
           {data.discountedPrice !== data.actualPrice && (
             <span className="text-[#E4CFBD] line-through text-[11px] font-normal">
-              €{data.actualPrice}
+              €{data.actualPrice.toString().replace(".", ",")}
             </span>
           )}
         </div>
@@ -218,7 +220,7 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
                         htmlFor={`style-${index}`}
                         className="text-[#2E0A16] text-base md:text-lg cursor-pointer"
                       >
-                        {item.name} - €{item.price}
+                        {item.name} - €{item.price.toString().replace(".", ",")}
                       </label>
                     </div>
                   ))}
@@ -234,7 +236,7 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
                       className="flex justify-between items-center rounded-md p-2 bg-white shadow-sm w-full md:w-[250px]"
                     >
                       <p className="font-medium text-[#2E0A16]">
-                        {item.name} - €{item.price}
+                        {item.name} - €{item.price.toString().replace(".", ",")}
                       </p>
                       <div className="flex items-center gap-3 md:gap-4">
                         <button
@@ -311,7 +313,10 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
                         0
                       ) || 0)) *
                     crowd
-                  ).toFixed(2)}
+                  )
+                    .toFixed(2)
+                    .toString()
+                    .replace(".", ",")}
                 </span>
               </div>
 

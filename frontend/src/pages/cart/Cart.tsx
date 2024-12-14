@@ -218,7 +218,7 @@ const Cart = () => {
                       <div className="space-y-1">
                         {item.addOns.map((addOn) => (
                           <p key={addOn._id} className="text-sm text-gray-600">
-                            {addOn.name} (×{addOn.quantity}) - {addOn.price}€
+                            {addOn.name} (×{addOn.quantity}) - {addOn.price.toString().replace(".", ",")}€
                           </p>
                         ))}
                       </div>
@@ -273,7 +273,7 @@ const Cart = () => {
                               )) *
                             // Then multiply by item quantity
                             item.quantity
-                          ).toFixed(2)
+                          ).toFixed(2).toString().replace(".", ",")
                         }
                         €
                       </span>
@@ -292,12 +292,12 @@ const Cart = () => {
             <div className="space-y-4 border-b border-dashed pb-4">
               <div className="flex justify-between text-[#554539]">
                 <span>{language == "en" ? "Price" : "Zwischensumme"}</span>
-                <span className="font-semibold">{subtotal.toFixed(2)}€</span>
+                <span className="font-semibold">{subtotal.toFixed(2).toString().replace(".", ",")}€</span>
               </div>
               <div className="flex justify-between text-[#554539]">
                 <span>{language == "en" ? "Discount" : "Rabatt"}</span>
                 <span className="font-semibold text-green-600">
-                  -{discount.toFixed(2)}€
+                  -{discount.toFixed(2).toString().replace(".", ",")}€
                 </span>
               </div>
               <div className="flex justify-between text-[#554539]">
@@ -348,7 +348,7 @@ const Cart = () => {
                 {language == "en" ? "Total" : "Gesamtbetrag"}
               </span>
               <span className="text-lg md:text-xl font-bold">
-                {total.toFixed(2)}€
+                {total.toFixed(2).toString().replace(".", ",")}€
               </span>
             </div>
 

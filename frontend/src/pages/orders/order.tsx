@@ -89,7 +89,7 @@ const OrdersList: React.FC = () => {
                     {order.status}
                   </span>
                 </p>
-                <p className="font-semibold">Total: €{order.orderTotal}</p>
+                <p className="font-semibold">Total: €{order.orderTotal.toString().replace(".", ",")}</p>
               </div>
               <div className="text-right text-gray-500">
                 <p>{new Date(order.createdAt).toLocaleDateString()}</p>
@@ -172,7 +172,7 @@ const OrdersList: React.FC = () => {
                   <div>
                     <p className="font-semibold">{item.name}</p>
                     <p>Quantity: {item.quantity}</p>
-                    <p>Price: €{item.price}</p>
+                    <p>Price: €{item.price.toString().replace(".", ",")}</p>
                   </div>
                 </div>
               ))}

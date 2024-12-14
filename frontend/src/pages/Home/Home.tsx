@@ -112,7 +112,7 @@ const Home = () => {
     {
       img: assets.google2,
       rating: 5,
-      desc: "Eines der besten indischen Restaurants in Deutschland! Große Auswahl an authentischen Gerichten, mein Favorit war das hervorragende Lamm Biryani. Erstklassiger Service und ein beeindruckender Barbereich. Absolut empfehlenswert!",
+      desc: "Eines der besten indischen Restaurants in Deutschland! Die Speisekarte bietet eine große Auswahl an authentischen Gerichten. Mein Favorit war das Lamm Biryani, hervorragend im Geschmack. Der Service war erstklassig, und der Barbereich war ein Highlight. Absolut empfehlenswert!",
       user: "Maximilian Weber",
     },
   ];
@@ -396,7 +396,7 @@ const Home = () => {
         }}
       >
         <video
-          src={assets.showcaseVidFHD}
+          src={assets.WhatsAppVideo}
           autoPlay
           muted
           loop
@@ -418,8 +418,11 @@ const Home = () => {
           }}
         >
           <CarouselContent className="-ml-2 sm:-ml-4">
-            {testimonials.map((data) => (
-              <CarouselItem className="pl-2 sm:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+            {testimonials.map((data, index) => (
+              <CarouselItem
+                key={index}
+                className="pl-2 sm:pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
+              >
                 <Card>
                   <CardContent className="pt-6 space-y-4">
                     <StarRating rating={data.rating}></StarRating>

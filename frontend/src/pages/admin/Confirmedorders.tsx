@@ -112,7 +112,7 @@ const AcceptedOrdersTable: React.FC = () => {
                         {item.addOns.map((addOn) => (
                           <div key={addOn._id}>
                             - {addOn.quantity}x {addOn.name} ($
-                            {addOn.price.toFixed(2)})
+                            {addOn.price.toFixed(2).toString().replace(".", ",")})
                           </div>
                         ))}
                       </div>
@@ -120,7 +120,7 @@ const AcceptedOrdersTable: React.FC = () => {
                   </div>
                 ))}
               </td>
-              <td className="p-4">${order.orderTotal.toFixed(2)}</td>
+              <td className="p-4">${order.orderTotal.toFixed(2).toString().replace(".", ",")}</td>
               <td className="p-4">
                 <span className="capitalize">{order.paymentMethod}</span>
               </td>

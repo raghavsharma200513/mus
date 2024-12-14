@@ -50,10 +50,12 @@ import google3 from "./google3.png";
 import google4 from "./google4.png";
 import Picsart from "./Picsart.png";
 import WhatsApp from "./WhatsApp.jpg";
+import WhatsAppVideo from "./WhatsApp Video.mp4";
 
 export const assets = {
   Picsart,
   WhatsApp,
+  WhatsAppVideo,
   coriander,
   crossIcon,
   google1,

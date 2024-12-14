@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import FoodCard from "./FoodCard";
 import { assets } from "@/assets/assets";
+import LanguageContext from "@/context/LanguageContext";
 
 // Type Definitions
 export interface CategoryType {
@@ -83,6 +84,13 @@ const convertMenuItemToFoodItem = (menuItem: MenuItem): FoodItem => {
 };
 
 function Menu(): JSX.Element {
+  const context = useContext(LanguageContext);
+
+  if (!context) {
+    throw new Error("LanguageSelector must be used within a LanguageProvider");
+  }
+  const { language } = context;
+
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -120,7 +128,7 @@ function Menu(): JSX.Element {
   return (
     <main>
       <div className="page-title">
-        <h1>Menu</h1>
+        <h1>{language == "en" ? "Menu" : "Speisekarte"}</h1>
         <h2>HOME / MENU</h2>
       </div>
       <div className="content min-h-[calc(80vh)] flex-col text-[#554939] gap-6 text-lg font-jost font-medium flex items-center justify-center">

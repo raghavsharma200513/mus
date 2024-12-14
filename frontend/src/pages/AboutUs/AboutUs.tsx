@@ -75,7 +75,7 @@ function AboutUs() {
         <div className="flex flex-col md:flex-row items-center">
           <div className="imgArea md:pr-20 md:basis-1/2 mb-8 md:mb-0">
             <img
-              src={assets.aboutMuseumPic}
+              src={assets.WhatsApp}
               className="w-full rounded-lg shadow-md"
               alt="Museum Restaurant"
             />
@@ -106,10 +106,25 @@ function AboutUs() {
         {/* Features Section */}
         <div className="features flex flex-wrap justify-center items-center gap-6 mt-10">
           {[
-            { Icon: Cat, text: "Pet Friendly" },
-            { Icon: TreeDeciduous, text: "Outdoor Setting" },
-            { Icon: Baby, text: "Kid Friendly" },
-            { Icon: Accessibility, text: "Disabled/Wheelchair Friendly" },
+            {
+              Icon: Cat,
+              text: language == "en" ? "Pet Friendly" : "Tierfreundlich",
+            },
+            {
+              Icon: TreeDeciduous,
+              text: language == "en" ? "Outdoor Setting" : "Außenbereich Essen",
+            },
+            {
+              Icon: Baby,
+              text: language == "en" ? "Kid Friendly" : "Kinderfreundlich",
+            },
+            {
+              Icon: Accessibility,
+              text:
+                language == "en"
+                  ? "Disabled/Wheelchair Friendly"
+                  : "Behinderten-/Rollstuhlgerecht",
+            },
           ].map(({ Icon, text }, index) => (
             <div
               key={index}

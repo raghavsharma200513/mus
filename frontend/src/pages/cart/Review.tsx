@@ -349,7 +349,8 @@ const Review: React.FC = () => {
                     <div className="flex-1">
                       <h4 className="font-medium">{item.menuItem.name}</h4>
                       <p className="text-sm text-gray-600">
-                        Size: {item.variant.name} ({item.variant.price}€)
+                        Size: {item.variant.name} (
+                        {item.variant.price.toString().replace(".", ",")}€)
                       </p>
                       <p className="text-sm text-gray-600">
                         Quantity: {item.quantity}
@@ -360,7 +361,9 @@ const Review: React.FC = () => {
                           <ul className="text-sm text-gray-600">
                             {item.addOns.map((addon) => (
                               <li key={addon._id}>
-                                {addon.name} ({addon.price}€ × {addon.quantity})
+                                {addon.name} (
+                                {addon.price.toString().replace(".", ",")}€ ×{" "}
+                                {addon.quantity})
                               </li>
                             ))}
                           </ul>
@@ -380,7 +383,10 @@ const Review: React.FC = () => {
                               )) *
                             // Then multiply by item quantity
                             item.quantity
-                          ).toFixed(2)
+                          )
+                            .toFixed(2)
+                            .toString()
+                            .replace(".", ",")
                         }
                         €
                       </p>
@@ -499,13 +505,15 @@ const Review: React.FC = () => {
                 <span className="text-gray-600">
                   {language == "en" ? "Subtotal" : "Zwischensumme"}
                 </span>
-                <span>{subtotal.toFixed(2)}€</span>
+                <span>{subtotal.toFixed(2).toString().replace(".", ",")}€</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">
                   {language == "en" ? "Discount" : "Rabatt"}
                 </span>
-                <span className="text-[#C9A07B]">-{discount.toFixed(2)}€</span>
+                <span className="text-[#C9A07B]">
+                  -{discount.toFixed(2).toString().replace(".", ",")}€
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">
@@ -521,7 +529,9 @@ const Review: React.FC = () => {
               <span className="text-lg font-semibold">
                 {language == "en" ? "Total" : "Gesamtbetrag"}
               </span>
-              <span className="text-lg font-semibold">{total.toFixed(2)}€</span>
+              <span className="text-lg font-semibold">
+                {total.toFixed(2).toString().replace(".", ",")}€
+              </span>
             </div>
 
             <div className="mt-6">
