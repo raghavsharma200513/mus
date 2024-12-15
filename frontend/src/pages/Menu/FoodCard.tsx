@@ -13,8 +13,8 @@ interface FoodItem {
   actualPrice: string;
   discountedPrice: string;
   type?: string;
-  variants?: { name: string; price: string }[];
-  addOns?: { name: string; price: string }[];
+  variants?: { name: string; price: string; _id: string }[];
+  addOns?: { name: string; price: string; _id: string }[];
 }
 
 interface CategoryType {
@@ -214,7 +214,10 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
                         name="style"
                         id={`style-${index}`}
                         className="w-5 h-5 accent-[#2E0A16] cursor-pointer"
-                        onChange={() => setSelectedStyle(item.name)}
+                        onChange={() => {
+                          console.log("varient", selectedStyle);
+                          setSelectedStyle(item._id);
+                        }}
                       />
                       <label
                         htmlFor={`style-${index}`}
@@ -304,7 +307,7 @@ const FoodCard: React.FC<MyComponentProps> = ({ data, category }) => {
                   €
                   {(
                     ((Number(
-                      data?.variants?.find((v) => v.name === selectedStyle)
+                      data?.variants?.find((v) => v._id === selectedStyle)
                         ?.price
                     ) || 0) +
                       (data?.addOns?.reduce(

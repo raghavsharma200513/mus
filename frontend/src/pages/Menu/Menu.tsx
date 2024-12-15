@@ -23,7 +23,7 @@ export interface FoodItem {
   discountedPrice: string;
   category: string;
   addOns?: { _id: string; name: string; price: string }[];
-  variants?: { name: string; price: string }[];
+  variants?: { _id: string; name: string; price: string }[];
 }
 
 export interface MenuItem {
@@ -77,6 +77,7 @@ const convertMenuItemToFoodItem = (menuItem: MenuItem): FoodItem => {
       price: addon.price.toString(),
     })),
     variants: menuItem.variants?.map((variant) => ({
+      _id: variant._id,
       name: variant.name,
       price: variant.price.toString(),
     })),

@@ -6,8 +6,10 @@ class CartController {
   // Add to Cart
   static async addToCart(req, res) {
     const { menuItemId, quantity, variantName, addOns } = req.body;
+    // console.log("variantName", variantName);
+
     const userId = req.userId;
-    console.log(req.body);
+    // console.log(req.body);
 
     try {
       // Fetch the menu item to get variant and add-on prices
@@ -15,8 +17,22 @@ class CartController {
       if (!menuItem) {
         return res.status(404).json({ message: "Menu item not found" });
       }
+      // console.log("menuItem", menuItem);
 
-      const variant = menuItem.variants.find((v) => v.name === variantName);
+      // const variant = menuItem.variants.find((v) => {
+      //   console.log(1, v);
+      //   console.log(2, v._id);
+      //   console.log(3, variantName);
+      //   console.log(4, v._id == variantName);
+      //   console.log(5, v._id === variantName);
+
+      //   v._id == variantName;
+      // });
+      const variant = menuItem.variants.find(
+        (v) => v._id.toString() === variantName
+      );
+
+      // console.log("variant", variant);
       if (!variant) {
         return res.status(404).json({ message: "Variant not found" });
       }
