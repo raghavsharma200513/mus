@@ -20,6 +20,7 @@ interface Category {
 interface MenuItem {
   _id: string;
   name: string;
+  image: File | null | string;
   actualPrice: string;
   discountedPrice?: string;
   desc?: string;
@@ -34,7 +35,7 @@ interface MenuData {
   discountedPrice: string;
   desc: string;
   category: string;
-  image: File | null;
+  image: File | null | string;
   addOns: AddOn[];
   variants: Variant[];
 }
@@ -201,7 +202,7 @@ const MenuItemManagement: React.FC = () => {
       discountedPrice: item.discountedPrice || "",
       desc: item.desc || "",
       category: item.category,
-      image: null,
+      image: item.image,
       addOns: item.addOns.length > 0 ? item.addOns : [],
       variants:
         item.variants.length > 0 ? item.variants : [{ name: "", price: "" }],
