@@ -10,7 +10,7 @@ exports.createMenuItem = async (req, res) => {
       name,
       actualPrice,
       discountedPrice,
-      description,
+      desc,
       category,
       addOns,
       variants,
@@ -23,6 +23,12 @@ exports.createMenuItem = async (req, res) => {
         .json({ error: "Name, price and category are required" });
     }
 
+    if (discountedPrice > actualPrice) {
+      return res
+        .status(400)
+        .json({ error: "discounted price is more then actual price." });
+    }
+
     // Parse the JSON strings into objects
     const parsedAddOns = JSON.parse(addOns || "[]");
     const parsedVariants = JSON.parse(variants || "[]");
@@ -32,7 +38,7 @@ exports.createMenuItem = async (req, res) => {
       name,
       actualPrice,
       discountedPrice,
-      description,
+      desc,
       category,
       addOns: parsedAddOns,
       variants: parsedVariants,

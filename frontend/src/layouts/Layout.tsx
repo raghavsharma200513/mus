@@ -5,7 +5,7 @@ import ScrollAndSocialButtons from "@/components/MediaButton";
 function Layout() {
   return (
     <>
-      <header className="sticky top-0 z-20">
+      <header className="fixed top-0 left-0 w-full z-20">
         <Navbar />
       </header>
       <main className="pt-[88px]">

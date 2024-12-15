@@ -413,7 +413,11 @@ const Review: React.FC = () => {
                 <p>{selectedAddress.country}</p>
               </div>
             ) : (
-              <p className="text-gray-600">No address selected</p>
+              <p className="text-[#de2f2f]">
+                {language == "en"
+                  ? "No address selected"
+                  : "Keine Adresse hinzugefügt"}
+              </p>
             )}
 
             <div className="space-y-2">
@@ -422,7 +426,7 @@ const Review: React.FC = () => {
                   key={address._id}
                   className={`p-4 border rounded-lg flex justify-between items-center cursor-pointer ${
                     address._id === selectedAddress?._id
-                      ? "border-[#2E0A16]"
+                      ? "border-[#de2f2f]"
                       : "border-gray-300"
                   }`}
                   onClick={() => setSelectedAddress(address)}
@@ -565,12 +569,12 @@ const Review: React.FC = () => {
                   onClick={() => setPaymentMethod("pod")}
                 >
                   <p className="font-medium">
-                    Pay at the Counter
-                    {language == "en" ? "ORDER NOW" : "Online Bezahlen"}
+                    {language == "en"
+                      ? "Pay at the Counter"
+                      : "Zahlung im Restaurant"}
                   </p>
                   <p className="text-sm text-gray-600">
-                    Store Pickup
-                    {language == "en" ? "ORDER NOW" : "ONLINE BESTELLEN"}
+                    {language == "en" ? "Store Pickup" : "Selbstabholung"}
                   </p>
                 </div>
                 <div

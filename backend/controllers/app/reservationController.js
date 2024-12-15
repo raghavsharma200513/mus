@@ -39,7 +39,7 @@ exports.createReservation = async (req, res) => {
       status: "pending",
     });
 
-    const formattedDate = newReservation.date.toLocaleDateString("en-US", {
+    const formattedDate = adjustedDate.toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -49,6 +49,11 @@ exports.createReservation = async (req, res) => {
     const result = await sendEmail(
       email,
       "Reservation Confirmed!",
+      `Your table has been successfully reserved for ${formattedDate} at ${time}. We look forward to serving you!`
+    );
+    const result1 = await sendEmail(
+      "mandeepsingh227@yahoo.com",
+      "You have received a new order",
       `Your table has been successfully reserved for ${formattedDate} at ${time}. We look forward to serving you!`
     );
 

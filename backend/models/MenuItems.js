@@ -18,6 +18,9 @@ const menuSchema = new mongoose.Schema({
   description: {
     name: String,
   },
+  desc: {
+    name: String,
+  },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",

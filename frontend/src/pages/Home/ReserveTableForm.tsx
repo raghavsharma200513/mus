@@ -174,7 +174,10 @@ function ReserveTableForm() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 w-full max-w-2xl mx-auto px-4 md:px-0"
+        >
           <FormField
             control={form.control}
             name="name"
@@ -237,14 +240,15 @@ function ReserveTableForm() {
               </FormItem>
             )}
           />
-          <div className="flex gap-4">
+
+          {/* Date and Time Section */}
+          <div className="flex flex-col md:flex-row gap-4">
             <FormField
               control={form.control}
               name="date"
               render={({ field }) => (
-                <FormItem className="basis-1/2">
+                <FormItem className="w-full md:basis-1/2">
                   <FormLabel>{language == "en" ? "Date" : "Datum"}</FormLabel>
-                  <br />
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -282,19 +286,19 @@ function ReserveTableForm() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="time"
               render={({ field }) => (
-                <FormItem className="basis-1/2">
+                <FormItem className="w-full md:basis-1/2">
                   <FormLabel>{language == "en" ? "Time" : "Uhrzeit"}</FormLabel>
-                  <br />
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger>
                         <SelectValue
                           placeholder={
                             language == "en"
@@ -317,27 +321,28 @@ function ReserveTableForm() {
               )}
             />
           </div>
-          <div className="flex items-end gap-3">
+
+          {/* Persons and Submit Button Section */}
+          <div className="flex flex-col md:flex-row gap-4">
             <FormField
               control={form.control}
               name="numberOfGuests"
               render={({ field }) => (
-                <FormItem className="basis-1/2">
+                <FormItem className="w-full md:basis-1/2">
                   <FormLabel>
-                    {language == "en" ? "Guests" : "Personen"}
+                    {language == "en" ? "Persons" : "Personen"}
                   </FormLabel>
-                  <br />
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger>
                         <SelectValue
                           placeholder={
                             language == "en"
-                              ? "Select a Time"
-                              : "Uhrzeit auswählen"
+                              ? "Select number of persons"
+                              : "Anzahl der Personen auswählen"
                           }
                         />
                       </SelectTrigger>
@@ -346,7 +351,7 @@ function ReserveTableForm() {
                       {[...Array(20)].map((_, i) => (
                         <SelectItem key={i + 1} value={(i + 1).toString()}>
                           {language === "en"
-                            ? `${i + 1} ${i === 0 ? "Guest" : "Guests"}`
+                            ? `${i + 1} ${i === 0 ? "Person" : "Persons"}`
                             : `${i + 1} Person(en)`}
                         </SelectItem>
                       ))}
@@ -358,23 +363,25 @@ function ReserveTableForm() {
             />
 
             <Button
-              className="basis-1/2"
+              className="w-full md:basis-1/2 h-10 mt-auto"
               type="submit"
-              disabled={!form.watch("time")} // Disable submit if no time selected
+              disabled={!form.watch("time")}
             >
-              {language == "en" ? "Submit" : "JETZT RESERVIEREN"}
+              {language == "en" ? "Reserve Now" : "JETZT RESERVIEREN"}
             </Button>
           </div>
-          <p className="font-jost text-sm">
+
+          <p className="font-jost text-sm text-center md:text-left">
             {language == "en"
               ? "By reserving a table, I consent to the Privacy Policy."
               : "Mit der Reservierung eines Tisches stimme ich der Datenschutzerklärung zu."}
           </p>
+
           <FormField
             control={form.control}
             name="newsletter"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex flex-col md:flex-row items-start space-y-3 md:space-y-0 md:space-x-3 rounded-md border p-4">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -389,8 +396,8 @@ function ReserveTableForm() {
                   </FormLabel>
                   <FormDescription>
                     {language == "en"
-                      ? "I would like to subscribe to the newsletter."
-                      : "Ich möchte den Newsletter abonnieren."}
+                      ? "I would like to subscribe to the newsletter to receive all the culinary highlights."
+                      : "Ich möchte den Newsletter abonnieren, um alle kulinarischen Highlights zu erhalten."}
                   </FormDescription>
                 </div>
               </FormItem>

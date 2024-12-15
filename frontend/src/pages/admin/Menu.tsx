@@ -22,7 +22,7 @@ interface MenuItem {
   name: string;
   actualPrice: string;
   discountedPrice?: string;
-  description?: string;
+  desc?: string;
   category: string;
   addOns: AddOn[];
   variants: Variant[];
@@ -32,7 +32,7 @@ interface MenuData {
   name: string;
   actualPrice: string;
   discountedPrice: string;
-  description: string;
+  desc: string;
   category: string;
   image: File | null;
   addOns: AddOn[];
@@ -48,7 +48,7 @@ const MenuItemManagement: React.FC = () => {
     name: "",
     actualPrice: "",
     discountedPrice: "",
-    description: "",
+    desc: "",
     category: "",
     image: null,
     addOns: [],
@@ -184,7 +184,7 @@ const MenuItemManagement: React.FC = () => {
       name: "",
       actualPrice: "",
       discountedPrice: "",
-      description: "",
+      desc: "",
       category: "",
       image: null,
       addOns: [],
@@ -199,10 +199,10 @@ const MenuItemManagement: React.FC = () => {
       name: item.name,
       actualPrice: item.actualPrice,
       discountedPrice: item.discountedPrice || "",
-      description: item.description || "",
+      desc: item.desc || "",
       category: item.category,
       image: null,
-      addOns: item.addOns.length > 0 ? item.addOns : [{ name: "", price: "" }],
+      addOns: item.addOns.length > 0 ? item.addOns : [],
       variants:
         item.variants.length > 0 ? item.variants : [{ name: "", price: "" }],
     });
@@ -276,7 +276,7 @@ const MenuItemManagement: React.FC = () => {
 
           <textarea
             name="description"
-            value={menuData.description}
+            value={menuData.desc}
             onChange={handleInputChange}
             placeholder="Description"
             className="w-full px-3 py-2 border rounded-md"

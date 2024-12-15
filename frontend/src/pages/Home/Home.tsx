@@ -13,7 +13,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import ContactForm from "./ContactForm";
 import { useContext } from "react";
 import LanguageContext from "@/context/LanguageContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface DiscoverData {
   img: string;
@@ -90,7 +90,7 @@ const Home = () => {
       },
       {
         img: assets.disc4img,
-        title: "Local Art Galleries",
+        title: "Regional Art",
         desc: "Explore the grandeur of this iconic castle, a symbol of royal history and elegance.",
       },
     ],
@@ -169,9 +169,18 @@ const Home = () => {
         <video
           src={assets.showcaseVidFHD}
           autoPlay
+          playsInline
           muted
           loop
-          className="absolute inset-0 w-full h-[100vh] object-cover z-0 "
+          preload="auto"
+          disablePictureInPicture
+          className="absolute inset-0 w-full h-[100vh] object-cover z-0"
+          style={{
+            objectFit: "cover",
+            width: "100%",
+            height: "100vh",
+            display: "block",
+          }}
         ></video>
         <div className="showcaseOverlay pt-24 pb-28 relative z-1 h-[100vh] bg-black/50 w-full">
           <div className="showcaseContent max-w-4xl mx-auto px-4">
@@ -218,7 +227,7 @@ const Home = () => {
               ? `“Our restaurant combines the historic allure of Hechingen with the
             rich, regal traditions of India’s royal cuisine. With each dish, we
             bring centuries of flavor, elegance, and craftsmanship to your
-            table, offering a culinary journey through time. ”`
+            table, offering a culinary journey through time.”`
               : "„Unser Restaurant verbindet den historischen Charme von Hechingen mit den königlichen Traditionen der indischen Küche. Mit jedem Gericht bringen wir Geschmack, Eleganz und Handwerkskunst auf Ihren Tisch und bieten Ihnen eine kulinarische Reise durch die Zeit.“"}
           </p>
           <p className="leading-7 mb-10"></p>
@@ -398,15 +407,24 @@ const Home = () => {
         <video
           src={assets.WhatsAppVideo}
           autoPlay
+          playsInline
           muted
           loop
-          className="absolute inset-0 w-full h-full object-cover z-0 "
+          preload="auto"
+          disablePictureInPicture
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          style={{
+            objectFit: "cover",
+            width: "100%",
+            height: "100%",
+            display: "block",
+          }}
         ></video>
       </section>
       <section className="relative w-full px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20">
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-jost font-semibold text-center text-[#554539] mb-8 sm:mb-12 lg:mb-16">
           {language == "en"
-            ? "Customer's Testimonials"
+            ? "Customer Testimonials"
             : "Unsere Kundenbewertungen"}
         </h2>
 
@@ -461,11 +479,13 @@ const Home = () => {
             ? "Our gift cards allow your loved ones to experience a royal feast, full of aromatic Indian spices and flavors. The perfect gift for those who love good food and culture."
             : "„Unsere Geschenkkarten schenken ein unvergessliches Erlebnis: Ein königliches Fest mit indischen Gewürzen und Geschmackswelten. Perfekt für alle, die gutes Essen und kulturelle Vielfalt schätzen.“"}
         </p>
-        <button className="flex gap-1 text-white bg-secondary items-center place-content-center content-center font-jost w-[200px] h-[50px] rounded hover:bg-secondary/80 mx-auto transition-color uppercase duration-500">
-          {language == "en"
-            ? "View All Gift Cards"
-            : "GESCHENKKARTEN ENTDECKEN"}
-        </button>
+        <Link to={"/gift-card"}>
+          <button className="flex gap-1 text-white bg-secondary items-center place-content-center content-center font-jost w-[200px] h-[50px] rounded hover:bg-secondary/80 mx-auto transition-color uppercase duration-500">
+            {language == "en"
+              ? "View All Gift Cards"
+              : "GESCHENKKARTEN ENTDECKEN"}
+          </button>
+        </Link>
         <img src={assets.giftCardBottom} className="absolute bottom-0" alt="" />
       </section>
       <section className="relative px-6 lg:px-20 mb-[-210px] z-10 pt-16 lg:pt-24">

@@ -192,8 +192,8 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary }) => {
         />
         <p className="font-jost text-sm">
           {language == "en"
-            ? "By reserving a table, I consent to the Privacy Policy."
-            : "Mit der Reservierung eines Tisches stimme ich der Datenschutzerklärung zu."}
+            ? "By sending this message, I agree to the data protection policy and the electronic collection and storage of my data to answer my request."
+            : "Mit dem Absenden dieser Nachricht stimme ich der Datenschutzerklärung zu und der elektronischen Erfassung sowie Speicherung meiner Daten zur Beantwortung meiner Anfrage."}
         </p>
 
         <div className="flex ">

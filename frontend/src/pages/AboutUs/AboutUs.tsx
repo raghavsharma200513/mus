@@ -164,14 +164,7 @@ function AboutUs() {
             <p className="text-base md:text-lg">
               <b>Mandeep Singh</b>
               {language == "en"
-                ? ` is a trailblazing entrepreneur, the first
-              Indian to establish a restaurant in the iconic Museum Hechingen.
-              Influenced by legendary chefs Manjit Singh Gill and Imtiaz
-              Qureshi, he blends Ayurvedic principles, Punjabi flavors, and
-              modern innovation to create a unique dining experience with
-              organic, sustainably sourced ingredients. Inspired by cultural
-              icon Diljit Dosanjh, Mandeep's vibrant energy bridges cultures and
-              creates an inviting space that celebrates.`
+                ? ` is a trailblazing entrepreneur, the first Indian to establish a restaurant in the iconic Museum Hechingen. Influenced by legendary chefs Manjit Singh Gill and Imtiaz Qureshi, he blends Ayurvedic principles, Punjabi flavors, and modern innovation to create a unique dining experience with organic, sustainably sourced ingredients. Inspired by cultural icon Diljit Dosanjh, Mandeep’s vibrant energy bridges cultures and creates an inviting space that celebrates Indian heritage. His journey shows how passion and authenticity can transform a historic venue into a modern culinary destination, connecting India and Germany. His restaurant is now a must-visit for food lovers seeking both history and flavor.`
                 : ` ist ein visionärer Unternehmer und der erste Inder, der ein Restaurant in Hechingen gegründet hat. Beeinflusst von den legendären Köchen Manjit Singh Gill und Imtiaz Qureshi kombiniert er ayurvedische Prinzipien, Punjabi-Aromen und moderne Innovationen, um ein einzigartiges kulinarisches Erlebnis mit biologisch und nachhaltig bezogenen Zutaten zu schaffen. Inspiriert von der kulturellen Ikone Diljit Dosanjh verbindet Mandeeps dynamische Ausstrahlung Kulturen und schafft einen einladenden Raum, der das indische Erbe feiert. Seine Reise zeigt, wie Leidenschaft und Authentizität ein historisches Lokal in eine moderne kulinarische Destination verwandeln können, die Indien und Deutschland verbindet. Sein Restaurant ist heute ein Muss für Feinschmecker, die sowohl Geschichte als auch Geschmack suchen.`}
             </p>
           </div>
@@ -179,7 +172,7 @@ function AboutUs() {
       </section>
 
       {/* Services Section */}
-      <section className="relative py-10 md:py-20 font-jost text-[#554539] services px-4 md:px-20">
+      <section className="relative py-10 md:py-20 font-jost text-[#554539] services ">
         <img
           src={assets.leaf1}
           alt=""
@@ -190,7 +183,7 @@ function AboutUs() {
           alt=""
           className="decor1 absolute z-[-1] w-[10vw] max-w-96 bottom-0 hidden md:block"
         />
-        <div className="box">
+        <div className="box px-4 md:px-20">
           <h2 className="text-3xl md:text-5xl mb-12 font-semibold text-center">
             {language == "en" ? "Our Services" : "Unsere Leistungen"}
           </h2>
@@ -263,13 +256,13 @@ function AboutUs() {
       </section>
 
       {/* Vision & Mission Section */}
-      <section className="vision-mission relative px-4 md:px-20 py-10 md:py-20">
+      <section className="vision-mission relative py-10 md:py-20">
         <img
           src={assets.leaf3}
           alt=""
           className="decor1 absolute z-[-1] w-[10vw] max-w-96 bottom-[-50px] hidden md:block"
         />
-        <div className="flex flex-col md:flex-row items-center">
+        <div className="flex flex-col md:flex-row px-4 md:px-20 items-center">
           <div className="content flex-1 font-jost text-[#554539] mb-8 md:mb-0 text-center md:text-left">
             <h2 className="text-3xl md:text-5xl font-semibold mb-6 md:mb-12">
               {language == "en"

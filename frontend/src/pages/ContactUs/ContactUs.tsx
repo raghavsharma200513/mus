@@ -78,13 +78,21 @@ function ContactUs() {
       <section className="flex flex-col md:flex-row relative my-8 md:my-12 gap-4 md:gap-10 mx-4 md:mx-20">
         <div className="relative overflow-hidden aspect-video md:aspect-square basis-full md:basis-1/2 mb-4 md:mb-0">
           <video
-            controls={false}
             src={assets.contactUs}
             autoPlay
-            loop
+            playsInline
             muted
+            loop
+            preload="auto"
+            disablePictureInPicture
             className="absolute object-cover w-full h-full locGif"
-          />
+            style={{
+              objectFit: "cover",
+              width: "100%",
+              height: "100%",
+              display: "block",
+            }}
+          ></video>
         </div>
         <div className="map basis-full md:basis-1/2 h-[300px] md:h-auto">
           <iframe
@@ -108,14 +116,14 @@ function ContactUs() {
           <a
             href="https://www.facebook.com/profile.php?id=61554941725773"
             className="block bg-primary/20 rounded-full p-2"
-             target="_blank"
+            target="_blank"
           >
             <Facebook fill="hsl(var(--primary))" width={20}></Facebook>
           </a>
           <a
             href="https://www.instagram.com/museum.hechingen/"
             className="block bg-primary/20 rounded-full p-2"
-             target="_blank"
+            target="_blank"
           >
             <Instagram fill="hsl(var(--primary))" width={20}></Instagram>
           </a>
