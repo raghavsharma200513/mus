@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { X } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 
 interface AddOn {
   name: string;
@@ -40,11 +40,16 @@ interface MenuData {
   variants: Variant[];
 }
 
+interface ActionColumnProps {
+  item: MenuItem;
+}
+
 const MenuItemManagement: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [menuData, setMenuData] = useState<MenuData>({
     name: "",
     actualPrice: "",
@@ -83,10 +88,17 @@ const MenuItemManagement: React.FC = () => {
     if (type === "file") {
       const fileInput = e.target as HTMLInputElement;
       const files = fileInput.files;
-      setMenuData((prev) => ({
-        ...prev,
-        [name]: files ? files[0] : null,
-      }));
+
+      if (files && files[0]) {
+        setMenuData((prev) => ({
+          ...prev,
+          [name]: files[0],
+        }));
+
+        // Create preview URL for the new image
+        const previewUrl = URL.createObjectURL(files[0]);
+        setImagePreview(previewUrl);
+      }
     } else {
       setMenuData((prev) => ({
         ...prev,
@@ -147,12 +159,17 @@ const MenuItemManagement: React.FC = () => {
     e.preventDefault();
     const formData = new FormData();
 
+    // Handle image separately
+    if (menuData.image instanceof File) {
+      formData.append("image", menuData.image);
+    }
+
+    // Append other data
     (Object.keys(menuData) as Array<keyof MenuData>).forEach((key) => {
       if (key === "addOns" || key === "variants") {
         formData.append(key, JSON.stringify(menuData[key]));
-      } else if (key === "image" && menuData[key]) {
-        formData.append("image", menuData[key] as File);
-      } else {
+      } else if (key !== "image") {
+        // Skip image as it's handled above
         formData.append(key, menuData[key] as string);
       }
     });
@@ -192,6 +209,7 @@ const MenuItemManagement: React.FC = () => {
       variants: [{ name: "", price: "" }],
     });
     setEditingItem(null);
+    setImagePreview(null);
   };
 
   const handleEdit = (item: MenuItem) => {
@@ -202,12 +220,86 @@ const MenuItemManagement: React.FC = () => {
       discountedPrice: item.discountedPrice || "",
       desc: item.desc || "",
       category: item.category,
-      image: item.image,
+      image: null, // Reset image to null since we'll use existing image if no new one is uploaded
       addOns: item.addOns.length > 0 ? item.addOns : [],
       variants:
         item.variants.length > 0 ? item.variants : [{ name: "", price: "" }],
     });
+
+    // Set image preview if item has an image
+    if (typeof item.image === "string") {
+      setImagePreview(`${import.meta.env.VITE_BACKEND_URL}${item.image}`);
+    } else {
+      setImagePreview(null);
+    }
   };
+  const handleDelete = async (itemId: string) => {
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      try {
+        await axios.delete(
+          `${import.meta.env.VITE_BACKEND_URL}/api/menu/${itemId}`
+        );
+        fetchMenuItems();
+        resetForm();
+      } catch (error) {
+        console.error("Failed to delete menu item:", error);
+      }
+    }
+  };
+  const ImageSection = () => {
+    console.log(1, `${import.meta.env.VITE_BACKEND_URL}${editingItem?.image}`);
+    console.log(2, imagePreview);
+
+    return (
+      <div className="space-y-2">
+        <input
+          type="file"
+          name="image"
+          onChange={handleInputChange}
+          className="w-full px-3 py-2 border rounded-md"
+          accept="image/*"
+        />
+        {(imagePreview || (editingItem && editingItem.image)) && (
+          <div className="relative w-32 h-32">
+            <img
+              src={
+                imagePreview ||
+                `${import.meta.env.VITE_BACKEND_URL}${editingItem?.image}`
+              }
+              alt="Preview"
+              className="w-full h-full object-cover rounded-md"
+            />
+            {/* <button
+              type="button"
+              onClick={() => {
+                setImagePreview(null);
+                setMenuData((prev) => ({ ...prev, image: null }));
+              }}
+              className="absolute top-0 right-0 p-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+            >
+              <X size={16} />
+            </button> */}
+          </div>
+        )}
+      </div>
+    );
+  };
+  const ActionsColumn: React.FC<ActionColumnProps> = ({ item }) => (
+    <td className="px-4 py-2 space-x-2">
+      <button
+        onClick={() => handleEdit(item)}
+        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
+      >
+        Edit
+      </button>
+      <button
+        onClick={() => handleDelete(item._id)}
+        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition"
+      >
+        <Trash2 size={16} />
+      </button>
+    </td>
+  );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
@@ -267,16 +359,17 @@ const MenuItemManagement: React.FC = () => {
             />
           </div>
 
-          <input
+          {/* <input
             type="file"
             name="image"
             onChange={handleInputChange}
             className="w-full px-3 py-2 border rounded-md"
             accept="image/*"
-          />
+          /> */}
+          <ImageSection />
 
           <textarea
-            name="description"
+            name="description" // Change this to "desc"
             value={menuData.desc}
             onChange={handleInputChange}
             placeholder="Description"
@@ -385,7 +478,8 @@ const MenuItemManagement: React.FC = () => {
         </form>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg p-6">
+      {/* <div className="bg-white shadow-md rounded-lg p-6"> */}
+      <div className="bg-white shadow-md rounded-lg p-6 h-[calc(100vh-2rem)] sticky top-4 overflow-y-auto">
         <h2 className="text-2xl font-semibold mb-4">Menu Items</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -416,14 +510,15 @@ const MenuItemManagement: React.FC = () => {
                       `$${item.actualPrice.toString().replace(".", ",")}`
                     )}
                   </td>
-                  <td className="px-4 py-2">
+                  {/* <td className="px-4 py-2">
                     <button
                       onClick={() => handleEdit(item)}
                       className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
                     >
                       Edit
                     </button>
-                  </td>
+                  </td> */}
+                  <ActionsColumn item={item} />
                 </tr>
               ))}
             </tbody>
