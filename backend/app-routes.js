@@ -10,6 +10,9 @@ const addressRoutes = require("./routes/app/addressRoutes");
 const reservationRoutes = require("./routes/app/reservationRoutes");
 const galleryRoutes = require("./routes/app/galleryRoutes");
 const messageRoutes = require("./routes/app/messageRoutes");
+const giftCardRoutes = require("./routes/app/giftCardRoutes");
+const bannerRoutes = require("./routes/app/bannerRoutes");
+const newsletterRoutes = require("./routes/app/newsletterRoutes");
 
 const AppRoutes = (app) => {
   app.use("/api/bookings", bookingRoutes);
@@ -24,6 +27,9 @@ const AppRoutes = (app) => {
   app.use("/api/reservation", reservationRoutes);
   app.use("/api/gallery", galleryRoutes);
   app.use("/api/message", messageRoutes);
+  app.use("/api/giftcard", giftCardRoutes);
+  app.use("/api/banner", bannerRoutes);
+  app.use("/api/newsletter", newsletterRoutes);
 };
 
 module.exports = AppRoutes;

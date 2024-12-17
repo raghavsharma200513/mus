@@ -11,9 +11,12 @@ import ReserveTableForm from "./ReserveTableForm";
 import StarRating from "./StarRating";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import ContactForm from "./ContactForm";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import LanguageContext from "@/context/LanguageContext";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Modal from "../../components/Modal";
+import { X } from "lucide-react";
 
 interface DiscoverData {
   img: string;
@@ -23,6 +26,12 @@ interface DiscoverData {
 
 interface DiscoverSection {
   [language: string]: DiscoverData[];
+}
+
+interface Banner {
+  imageUrl: string;
+  title: string;
+  description?: string;
 }
 
 // interface CarouselProps {
@@ -36,7 +45,31 @@ const Home = () => {
   if (!context) {
     throw new Error("LanguageSelector must be used within a LanguageProvider");
   }
-  const { language } = context;
+  const { language, bannerSeen, setBannerSeen } = context;
+  const [banner, setBanner] = useState<Banner | null>(null);
+  const [isBannerOpen, setIsBannerOpen] = useState(false);
+  useEffect(() => {
+    const fetchBanner = async () => {
+      try {
+        const { data } = await axios.get(
+          import.meta.env.VITE_BACKEND_URL + "/api/banner/enable"
+        );
+        console.log(data.data);
+
+        // Find the first enabled banner
+        const activeBanner = data.data;
+
+        if (activeBanner) {
+          setBanner(activeBanner);
+          setIsBannerOpen(bannerSeen);
+        }
+      } catch (error) {
+        console.error("Error fetching banner:", error);
+      }
+    };
+
+    fetchBanner();
+  }, []);
 
   const showcaseSection = {
     en: {
@@ -165,6 +198,35 @@ const Home = () => {
   };
   return (
     <>
+      <Modal
+        open={isBannerOpen}
+        onClose={() => {
+          setIsBannerOpen(false);
+          setBannerSeen(false);
+        }}
+      >
+        {banner && (
+          <div className="relative text-center">
+            <button
+              onClick={() => setIsBannerOpen(false)}
+              className="absolute top-2 right-2 z-10 bg-gray-100 bg-opacity-50 rounded-full p-1 hover:bg-opacity-75 transition"
+            >
+              <X size={24} color="black" />
+            </button>
+            <img
+              src={import.meta.env.VITE_BACKEND_URL + banner.imageUrl}
+              alt={banner.title}
+              className="w-[90vw] sm:w-[40vw] h-auto"
+            />
+            {banner.title && (
+              <h2 className="text-xl font-bold mt-2">{banner.title}</h2>
+            )}
+            {banner.description && (
+              <p className="text-sm mt-1">{banner.description}</p>
+            )}
+          </div>
+        )}
+      </Modal>
       <section className="hero relative flex items-center  justify-center text-white">
         <video
           src={assets.showcaseVidFHD}
@@ -495,7 +557,7 @@ const Home = () => {
           </h2>
           <div className="flex flex-wrap lg:flex-nowrap gap-6 lg:gap-4">
             {/* Map Section */}
-            <div className="map basis-full lg:basis-1/2 h-[300px] sm:h-[400px] lg:h-[500px]">
+            <div className="map basis-full lg:basis-1/2 h-[300px] sm:h-[400px] lg:h-[618px]">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2651.559532861968!2d8.960021176474669!3d48.34977107126759!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479a025caee3deef%3A0x48134b05d76cf695!2sMuseum%20Restaurant!5e0!3m2!1sen!2sin!4v1730740243911!5m2!1sen!2sin"
                 className="w-full h-full border-0"
@@ -506,7 +568,7 @@ const Home = () => {
             </div>
             {/* Contact Form Section */}
             <div className="form-container basis-full lg:basis-1/2">
-              <ContactForm btnPrimary={true}></ContactForm>
+              <ContactForm btnPrimary={true} color="#000000"></ContactForm>
             </div>
           </div>
         </div>

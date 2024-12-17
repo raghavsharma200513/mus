@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, CheckCircle2 } from "lucide-react";
+import { CalendarIcon, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -459,7 +459,7 @@ function ReserveTableForm() {
                   onClick={handleCloseModal}
                   className="hover:bg-gray-100 transition-colors"
                 >
-                  {language == "en" ? "Cancel" : "Schließen"}
+                  {language == "en" ? "Cancel" : "Abbrechen"}
                 </Button>
                 <Button
                   onClick={handleConfirmReservation}
@@ -472,7 +472,7 @@ function ReserveTableForm() {
                       : "Einreichen..."
                     : language === "en"
                     ? "Confirm Reservation"
-                    : "Bestätigen Sie die Reservierung"}
+                    : "Reservierung Bestätigen"}
                 </Button>
               </div>
               {form.formState.errors.root && (
@@ -483,22 +483,24 @@ function ReserveTableForm() {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center space-y-6 p-4">
-              <CheckCircle2
-                size={80}
-                className="text-green-500 animate-pulse"
-              />
+              <Clock size={80} className="text-yellow-500 animate-pulse" />
               <h2 className="text-2xl font-bold text-[#2e0a16] text-center">
-                {" "}
                 {language == "en"
-                  ? "Reservation Confirmed!"
-                  : "Reservierung bestätigt!"}
+                  ? "Reservation Request Received!"
+                  : "Reservierungsanfrage eingegangen!"}
               </h2>
-              <p className="text-gray-600 text-center">
-                {" "}
-                {language == "en"
-                  ? "Your table has been successfully reserved. We look forward to serving you!"
-                  : "Ihr Tisch wurde erfolgreich reserviert. Wir freuen uns darauf, Sie zu bedienen!"}
-              </p>
+              <div className="text-gray-600 text-center space-y-2">
+                <p>
+                  {language == "en"
+                    ? "Your reservation request is being processed. We will review it shortly."
+                    : "Ihre Reservierungsanfrage wird bearbeitet. Wir werden sie in Kürze prüfen."}
+                </p>
+                <p className="text-sm">
+                  {language == "en"
+                    ? "You will receive a confirmation email once your reservation is confirmed."
+                    : "Sie erhalten eine Bestätigungs-E-Mail, sobald Ihre Reservierung bestätigt wurde."}
+                </p>
+              </div>
               <Button
                 onClick={handleCloseModal}
                 className="bg-[#2e0a16] hover:bg-[#4a111f] transition-colors"

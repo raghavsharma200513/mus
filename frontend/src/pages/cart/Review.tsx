@@ -152,7 +152,6 @@ const Review: React.FC = () => {
   };
 
   const applyCoupon = async () => {
-    setCouponError("");
     setDiscount(0);
 
     try {
@@ -164,7 +163,37 @@ const Review: React.FC = () => {
           },
         }
       );
+      console.log(data);
 
+      // Check if the data is a coupon type
+      if (data.type === "coupon") {
+        // Check coupon status and redemption
+        if (data.giftCard.status !== "issued" || data.giftCard.isRedeemed) {
+          setCouponError("This coupon is not valid or has already been used");
+          return;
+        }
+
+        // Additional checks for coupon validity
+        const currentDate = new Date();
+        const couponCreatedAt = new Date(data.giftCard.createdAt);
+
+        // Assuming coupon is valid for 30 days from creation
+        const couponExpirationDate = new Date(couponCreatedAt);
+        couponExpirationDate.setDate(couponCreatedAt.getDate() + 365 * 10);
+
+        if (currentDate > couponExpirationDate) {
+          setCouponError("This coupon has expired");
+          return;
+        }
+
+        // Apply the coupon amount as a direct discount
+        const finalDiscount = data.giftCard.amount;
+        setDiscount(finalDiscount);
+        setCouponError("");
+        return;
+      }
+
+      // Existing coupon logic for other types of discounts
       const couponData = data as CouponData;
       const currentDate = new Date();
       const validFrom = new Date(couponData.validFrom);
@@ -192,8 +221,18 @@ const Review: React.FC = () => {
         (subtotal * couponData.discountPercentage) / 100;
       const finalDiscount = Math.min(calculatedDiscount, couponData.upperLimit);
       setDiscount(finalDiscount);
-    } catch (error) {
-      setCouponError("Invalid coupon code");
+      setCouponError("");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        // Now we know it's an Axios error and can safely access response
+        setCouponError(error.response?.data?.message || "Invalid coupon code");
+      } else if (error instanceof Error) {
+        // For standard Error types
+        setCouponError("Invalid coupon code");
+      } else {
+        // Fallback for unknown error types
+        setCouponError("An unexpected error occurred");
+      }
       console.error("Error applying coupon:", error);
     }
   };
@@ -250,6 +289,7 @@ const Review: React.FC = () => {
         couponCode,
         paymentMethod,
       };
+      console.log("orderData", orderData);
 
       const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/orders/create`,
@@ -489,9 +529,14 @@ const Review: React.FC = () => {
             <div className="mb-4">
               <input
                 type="text"
-                placeholder="Enter coupon code"
+                placeholder={
+                  language == "en"
+                    ? "Enter coupon code"
+                    : "Gutscheincode eingeben"
+                }
+                // placeholder=""
                 value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                onChange={(e) => setCouponCode(e.target.value)}
                 className="w-full px-4 py-2 border rounded-lg"
               />
               <button

@@ -2,7 +2,8 @@ import { assets } from "@/assets/assets";
 import Facebook from "@/components/social_icons/Facebook";
 import Instagram from "@/components/social_icons/Instagram";
 import LanguageContext from "@/context/LanguageContext";
-import { useContext } from "react";
+import axios from "axios";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 
 type Language = "de" | "en";
@@ -14,6 +15,10 @@ type LinkList = {
 
 function Footer() {
   const context = useContext(LanguageContext);
+  const [email, setEmail] = useState("");
+  const [subscribeStatus, setSubscribeStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   if (!context) {
     throw new Error("LanguageSelector must be used within a LanguageProvider");
@@ -58,6 +63,35 @@ function Footer() {
       },
     },
   ];
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    console.log(email);
+
+    try {
+      // Add your subscription API call here
+      await axios.post(
+        import.meta.env.VITE_BACKEND_URL + "/api/newsletter/subscribe",
+        {
+          email,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setSubscribeStatus("success");
+      // setEmail("");
+      setTimeout(() => setSubscribeStatus("idle"), 3000);
+    } catch (error) {
+      console.log(error);
+      setSubscribeStatus("error");
+      setTimeout(() => setSubscribeStatus("idle"), 3000);
+    }
+  };
 
   return (
     <footer className="bg-primary w-full relative">
@@ -112,6 +146,40 @@ function Footer() {
               ? "Join our newsletter to stay up to date on features and releases."
               : "Melden Sie sich für unseren Newsletter an und verpassen Sie keine kulinarischen Highlights."}
           </p>
+          <form onSubmit={handleSubscribe} className="mt-4 relative">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={
+                  language === "en" ? "Enter your email" : "E-Mail eingeben"
+                }
+                className="flex-1 px-4 py-2 rounded-md bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:border-white/40"
+                required
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-white text-primary rounded-md hover:bg-white/90 transition-colors font-jost"
+              >
+                {language === "en" ? "Subscribe" : "Abonnieren"}
+              </button>
+            </div>
+            {subscribeStatus === "success" && (
+              <p className="absolute mt-1 text-sm text-green-400">
+                {language === "en"
+                  ? "Successfully subscribed!"
+                  : "Erfolgreich abonniert!"}
+              </p>
+            )}
+            {subscribeStatus === "error" && (
+              <p className="absolute mt-1 text-sm text-red-400">
+                {language === "en"
+                  ? "Subscription failed. Please try again."
+                  : "Abonnement fehlgeschlagen. Bitte versuchen Sie es erneut."}
+              </p>
+            )}
+          </form>
         </div>
       </div>
 

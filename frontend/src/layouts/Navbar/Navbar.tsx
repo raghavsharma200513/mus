@@ -26,6 +26,8 @@ interface Links {
 interface LanguageContextType {
   language: "en" | "de";
   changeLanguage: (lang: "en" | "de") => void;
+  bannerSeen: boolean;
+  setBannerSeen: (seen: boolean) => void;
 }
 
 const Navbar: React.FC = () => {
@@ -77,7 +79,7 @@ const Navbar: React.FC = () => {
       { name: "GALERIE", link: "/gallery" },
       { name: "GESCHENKKARTE", link: "/gift-card#page-title" },
       { name: "ÜBER UNS", link: "/about-us" },
-      { name: "KONTAKT", link: "/contact-us" },
+      { name: "KONTAKT", link: "/contact-us#contact" },
     ],
     en: [
       { name: "HOME", link: "/" },
@@ -85,7 +87,7 @@ const Navbar: React.FC = () => {
       { name: "GALLERY", link: "/gallery" },
       { name: "GIFT CARD", link: "/gift-card#page-title" },
       { name: "ABOUT US", link: "/about-us" },
-      { name: "CONTACT US", link: "/contact-us" },
+      { name: "CONTACT US", link: "/contact-us#contact" },
     ],
   };
 

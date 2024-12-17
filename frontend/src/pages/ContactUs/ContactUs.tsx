@@ -38,7 +38,7 @@ function ContactUs() {
   ];
 
   return (
-    <main className="w-full">
+    <main className="w-full" id="contact">
       <div className="page-title text-center py-8 bg-gray-100">
         <h1 className="text-3xl md:text-4xl font-bold">
           {language == "en" ? "Contact Us" : "Kontakt"}
@@ -70,7 +70,7 @@ function ContactUs() {
         />
 
         <div className="max-w-screen-sm relative z-10 mx-4 md:mx-auto">
-          <ContactForm btnPrimary={false}></ContactForm>
+          <ContactForm btnPrimary={false} color="slate-50"></ContactForm>
         </div>
       </section>
 

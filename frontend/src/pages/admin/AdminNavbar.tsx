@@ -19,6 +19,7 @@ const mockdata = [
   { label: "Coupon", link: "/adminnavbar/discount" },
   { label: "Message", link: "/adminnavbar/message" },
   { label: "Gallery", link: "/adminnavbar/gallery" },
+  { label: "Banner", link: "/adminnavbar/banner" },
   {
     label: "Menu",
     initiallyOpened: false,

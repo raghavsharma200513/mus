@@ -2,6 +2,7 @@
 const Order = require("../../models/OrderModel");
 const User = require("../../models/User");
 const Cart = require("../../models/CartModel");
+const GiftCard = require("../../models/GiftCard");
 const Coupon = require("../../models/DiscountModal");
 const Address = require("../../models/Address");
 const paypal = require("paypal-rest-sdk");
@@ -34,11 +35,14 @@ class OrderController {
       totalAmount += itemTotal;
     }
 
-    // Apply coupon if provided
+    // Apply coupon/gift card if provided
     let discountAmount = 0;
+    let discountType = null;
+
     if (couponCode) {
       console.log("couponCode", couponCode);
 
+      // First, try to find a traditional coupon
       const coupon = await Coupon.findOne({
         code: couponCode.toUpperCase(),
         isActive: true,
@@ -46,35 +50,41 @@ class OrderController {
         validTo: { $gte: new Date() },
         minimumOrderValue: { $lte: totalAmount },
       });
-      console.log("coupon", coupon);
 
       if (coupon) {
         discountAmount = Math.min(
           (totalAmount * coupon.discountPercentage) / 100,
           coupon.upperLimit
         );
-        console.log("discountAmount", discountAmount);
+        discountType = "coupon";
+        console.log("coupon discount", discountAmount);
+      } else {
+        // If no discount found, check gift cards
+        const giftCard = await GiftCard.findOne({
+          code: couponCode,
+        });
+
+        if (giftCard && !giftCard.isRedeemed) {
+          discountAmount = giftCard.amount;
+          discountType = "giftCard";
+          console.log("gift card amount", discountAmount);
+        }
       }
     }
 
-    console.log(
-      `{
-      subtotal: totalAmount,
-      discount: discountAmount,
-      total: totalAmount - discountAmount,
-    }`,
-      {
-        subtotal: totalAmount,
-        discount: discountAmount,
-        total: totalAmount - discountAmount,
-      }
-    );
+    // Ensure discount doesn't exceed total amount
+    discountAmount = Math.min(discountAmount, totalAmount);
 
-    return {
+    const result = {
       subtotal: totalAmount,
       discount: discountAmount,
       total: totalAmount - discountAmount,
+      discountType: discountType,
     };
+
+    console.log("Order Amount Calculation:", result);
+
+    return result;
   }
 
   static async createOrderFromCart(req, res) {
@@ -108,7 +118,7 @@ class OrderController {
       }
 
       // 2. Calculate order amount with coupon
-      const { subtotal, discount, total } =
+      const { subtotal, discount, total, discountType } =
         await OrderController.calculateOrderAmount(cart, couponCode);
 
       // 3. Prepare order items
@@ -150,6 +160,22 @@ class OrderController {
         cart.items = [];
         cart.totalAmount = 0;
         await cart.save();
+        if (discountType == "giftCard") {
+          const giftCard = await GiftCard.findOne({ code: couponCode });
+
+          if (!giftCard) {
+            return res.status(404).json({ error: "Gift card not found" });
+          }
+
+          if (giftCard.isRedeemed) {
+            return res
+              .status(400)
+              .json({ error: "Gift card already redeemed" });
+          }
+          giftCard.isRedeemed = true;
+          giftCard.status = "redeemed";
+          await giftCard.save();
+        }
 
         return res.status(201).json({
           order,

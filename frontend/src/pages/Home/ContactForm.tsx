@@ -12,9 +12,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ContactProps } from "@/Interface";
 import LanguageContext from "@/context/LanguageContext";
 
@@ -38,9 +40,10 @@ const formSchema = z.object({
       "Enter a valid email."
     ),
   message: z.string().min(5, "Message must be at least 5 characters."),
+  newsletter: z.boolean().default(false),
 });
 
-const ContactForm: React.FC<ContactProps> = ({ btnPrimary }) => {
+const ContactForm: React.FC<ContactProps> = ({ btnPrimary, color }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,6 +51,7 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary }) => {
       phone: "",
       email: "",
       message: "",
+      newsletter: true,
     },
   });
 
@@ -99,7 +103,7 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary }) => {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-slate-50">
+              <FormLabel className={`text-${color}`}>
                 {language === "en" ? "Name" : "Name"}
               </FormLabel>
               <FormControl>
@@ -124,7 +128,7 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary }) => {
             name="phone"
             render={({ field }) => (
               <FormItem className="basis-1/2">
-                <FormLabel className="text-slate-50">
+                <FormLabel className={`text-${color}`}>
                   {language === "en" ? "Phone" : "Telefon"}
                 </FormLabel>
                 <FormControl>
@@ -148,7 +152,7 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary }) => {
             name="email"
             render={({ field }) => (
               <FormItem className="basis-1/2">
-                <FormLabel className="text-slate-50">
+                <FormLabel className={`text-${color}`}>
                   {language === "en" ? "Email" : "E-Mail"}
                 </FormLabel>
                 <FormControl>
@@ -172,7 +176,7 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary }) => {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-slate-50">
+              <FormLabel className={`text-${color}`}>
                 {language === "en" ? "Your Message" : "Nachricht"}
               </FormLabel>
               <FormControl>
@@ -190,11 +194,38 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary }) => {
             </FormItem>
           )}
         />
-        <p className="font-jost text-sm">
+        <p className={`font-jost text-sm text-${color}`}>
           {language == "en"
             ? "By sending this message, I agree to the data protection policy and the electronic collection and storage of my data to answer my request."
             : "Mit dem Absenden dieser Nachricht stimme ich der Datenschutzerklärung zu und der elektronischen Erfassung sowie Speicherung meiner Daten zur Beantwortung meiner Anfrage."}
         </p>
+
+        <FormField
+          control={form.control}
+          name="newsletter"
+          render={({ field }) => (
+            <FormItem className="flex flex-col md:flex-row items-start space-y-3 md:space-y-0 md:space-x-3 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className={`text-${color}`}>
+                  {language == "en"
+                    ? "Subscribe to Newsletter"
+                    : "Newsletter abonnieren"}
+                </FormLabel>
+                <FormDescription className={`text-${color}`}>
+                  {language == "en"
+                    ? "I would like to subscribe to the newsletter to receive all the culinary highlights."
+                    : "Ich möchte den Newsletter abonnieren, um alle kulinarischen Highlights zu erhalten."}
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
 
         <div className="flex ">
           <Button

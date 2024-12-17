@@ -46,20 +46,11 @@ exports.createReservation = async (req, res) => {
       day: "numeric",
     });
 
-    const result = await sendEmail(
-      email,
-      "Reservation Confirmed!",
-      `Your table has been successfully reserved for ${formattedDate} at ${time}. We look forward to serving you!`
-    );
-    const result1 = await sendEmail(
+    await sendEmail(
       "mandeepsingh227@yahoo.com",
       "You have received a new order",
       `Your table has been successfully reserved for ${formattedDate} at ${time}. We look forward to serving you!`
     );
-
-    if (result) {
-      console.log("Email sent successfully");
-    }
 
     res.status(201).json(newReservation);
   } catch (error) {
@@ -186,9 +177,6 @@ exports.getReservation = async (req, res) => {
 
 exports.updateStatus = async (req, res) => {
   const { status } = req.body;
-  console.log("req.params.reservationId", req.params.id);
-  console.log("req.body", req.body);
-  console.log("helooooooo");
 
   try {
     const reservation = await Reservation.findById(req.params.id);
@@ -199,9 +187,30 @@ exports.updateStatus = async (req, res) => {
         message: "No reservation found with that ID",
       });
     }
+
     reservation.status = status;
     await reservation.save();
-    console.log("reservation", reservation);
+
+    // Format the date and time
+    const date = new Date(reservation.date);
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(date);
+
+    const emailMessage =
+      status === "accepted"
+        ? `Your table has been successfully reserved for ${formattedDate} at ${reservation.time}. We look forward to serving you!`
+        : `Your table has been Canceled for ${formattedDate} at ${reservation.time}. We look forward to serving you!`;
+
+    await sendEmail(
+      reservation.email,
+      status === "accepted"
+        ? "Reservation Confirmed!"
+        : "Reservation Canceled!",
+      emailMessage
+    );
 
     res.status(200).json({
       status: "success",
@@ -210,7 +219,6 @@ exports.updateStatus = async (req, res) => {
       },
     });
   } catch (error) {
-    // Handle invalid ID error
     if (error.name === "CastError") {
       return res.status(400).json({
         status: "fail",

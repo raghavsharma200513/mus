@@ -6,7 +6,7 @@ const Category = require("../../models/Category");
 exports.createCategory = async (req, res) => {
   try {
     const { number } = req.body;
-    console.log("hellooooooooooo");
+    // console.log("hellooooooooooo");
 
     if (!number) {
       return res.status(400).json({ error: "Number is required" });

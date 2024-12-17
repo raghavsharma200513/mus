@@ -485,6 +485,7 @@ const MenuItemManagement: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-100">
+                <th className="px-4 py-2 text-left">Index</th>
                 <th className="px-4 py-2 text-left">Name</th>
                 <th className="px-4 py-2 text-left">Category</th>
                 <th className="px-4 py-2 text-left">Price</th>
@@ -492,8 +493,9 @@ const MenuItemManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {menuItems.map((item) => (
+              {menuItems.map((item, index) => (
                 <tr key={item._id} className="border-b">
+                  <td className="px-4 py-2">{index + 1}</td>
                   <td className="px-4 py-2">{item.name}</td>
                   <td className="px-4 py-2">
                     {categories.find((c) => c._id === item.category)?.name}

@@ -218,7 +218,8 @@ const Cart = () => {
                       <div className="space-y-1">
                         {item.addOns.map((addOn) => (
                           <p key={addOn._id} className="text-sm text-gray-600">
-                            {addOn.name} (×{addOn.quantity}) - {addOn.price.toString().replace(".", ",")}€
+                            {addOn.name} (×{addOn.quantity}) -{" "}
+                            {addOn.price.toString().replace(".", ",")}€
                           </p>
                         ))}
                       </div>
@@ -273,7 +274,10 @@ const Cart = () => {
                               )) *
                             // Then multiply by item quantity
                             item.quantity
-                          ).toFixed(2).toString().replace(".", ",")
+                          )
+                            .toFixed(2)
+                            .toString()
+                            .replace(".", ",")
                         }
                         €
                       </span>
@@ -292,7 +296,9 @@ const Cart = () => {
             <div className="space-y-4 border-b border-dashed pb-4">
               <div className="flex justify-between text-[#554539]">
                 <span>{language == "en" ? "Price" : "Zwischensumme"}</span>
-                <span className="font-semibold">{subtotal.toFixed(2).toString().replace(".", ",")}€</span>
+                <span className="font-semibold">
+                  {subtotal.toFixed(2).toString().replace(".", ",")}€
+                </span>
               </div>
               <div className="flex justify-between text-[#554539]">
                 <span>{language == "en" ? "Discount" : "Rabatt"}</span>
@@ -356,7 +362,7 @@ const Cart = () => {
               onClick={() => navigate(`/review?cid=${cartData._id}&cpn=`)}
               className="w-full bg-[#2E0A16] text-white py-3 rounded-lg mt-6 font-semibold text-sm md:text-base hover:bg-[#4a1627] transition-colors"
             >
-              {language == "en" ? "Proceed to Checkout" : "Artikel"}
+              {language == "en" ? "Proceed to Checkout" : "Zur Kasse gehen"}
             </button>
           </div>
         </div>

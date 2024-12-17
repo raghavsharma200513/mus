@@ -1,5 +1,6 @@
 // controllers/discountController.js
 const Discount = require("../../models/DiscountModal");
+const GiftCard = require("../../models/GiftCard");
 
 class DiscountController {
   // Create a new coupon
@@ -83,16 +84,42 @@ class DiscountController {
   }
 
   static async getCouponsById(req, res) {
-    const code = req.params.id;
+    const id = req.params.id;
+
+    console.log(id);
 
     try {
-      const coupons = await Discount.findOne({ code: code.toUpperCase() });
-      if (!coupons) {
-        return res.status(404).json({ message: "Coupon not found" });
+      // First, try to find a coupon
+      const coupon = await Discount.findOne({ code: id.toUpperCase() });
+      console.log("coupon", coupon);
+
+      if (coupon) {
+        return res.status(200).json(coupon);
       }
-      res.status(200).json(coupons);
+
+      // If no coupon found, try to find a gift card
+      const giftCard = await GiftCard.findOne({ code: id });
+
+      console.log("giftCard", giftCard);
+      if (giftCard) {
+        if (giftCard.isRedeemed) {
+          return res
+            .status(400)
+            .json({ message: "code has already been used" });
+        }
+        return res.status(200).json({ giftCard, type: "coupon" });
+      }
+
+      // If neither found, return 404
+      return res.status(404).json({
+        message: "Neither coupon nor gift card found with the provided ID",
+      });
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch coupons", error });
+      console.error("Error fetching coupon/gift card:", error);
+      return res.status(500).json({
+        message: "Failed to fetch coupon/gift card",
+        error,
+      });
     }
   }
 
