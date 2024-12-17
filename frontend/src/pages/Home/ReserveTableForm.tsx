@@ -46,12 +46,10 @@ const generateTimeSlots = () => {
       value: `${hour.toString().padStart(2, "0")}:00`,
       label: `${hour.toString().padStart(2, "0")}:00`,
     });
-    if (hour < 23) {
-      timeSlots.push({
-        value: `${hour.toString().padStart(2, "0")}:30`,
-        label: `${hour.toString().padStart(2, "0")}:30`,
-      });
-    }
+    timeSlots.push({
+      value: `${hour.toString().padStart(2, "0")}:30`,
+      label: `${hour.toString().padStart(2, "0")}:30`,
+    });
   }
 
   return timeSlots;
