@@ -40,7 +40,7 @@ class OrderController {
     let discountType = null;
 
     if (couponCode) {
-      console.log("couponCode", couponCode);
+      // console.log("couponCode", couponCode);
 
       // First, try to find a traditional coupon
       const coupon = await Coupon.findOne({
@@ -57,7 +57,7 @@ class OrderController {
           coupon.upperLimit
         );
         discountType = "coupon";
-        console.log("coupon discount", discountAmount);
+        // console.log("coupon discount", discountAmount);
       } else {
         // If no discount found, check gift cards
         const giftCard = await GiftCard.findOne({
@@ -67,7 +67,7 @@ class OrderController {
         if (giftCard && !giftCard.isRedeemed) {
           discountAmount = giftCard.amount;
           discountType = "giftCard";
-          console.log("gift card amount", discountAmount);
+          // console.log("gift card amount", discountAmount);
         }
       }
     }
@@ -82,7 +82,7 @@ class OrderController {
       discountType: discountType,
     };
 
-    console.log("Order Amount Calculation:", result);
+    // console.log("Order Amount Calculation:", result);
 
     return result;
   }
@@ -244,14 +244,36 @@ class OrderController {
               .status(400)
               .json({ message: "Payment verification failed" });
           } else {
+            // console.log(1);
+
             order.status = "pending";
             order.paymentId = payment.id;
             order.payerId = payerId;
             order.amount = payment.transactions[0].amount.total;
             order.currency = payment.transactions[0].amount.currency;
             order.paymentStatus = payment.state;
+            // console.log(2);
             await order.save();
+            // console.log(3);
+            const giftCard = await GiftCard.findOne({ code: order.couponCode });
 
+            // console.log(4);
+            if (!giftCard) {
+              return res.status(404).json({ error: "Gift card not found" });
+            }
+            // console.log(5);
+
+            // if (giftCard.isRedeemed) {
+            //   return res
+            //     .status(400)
+            //     .json({ error: "Gift card already redeemed" });
+            // }
+            // console.log(6);
+            giftCard.isRedeemed = true;
+            giftCard.status = "redeemed";
+            await giftCard.save();
+
+            // console.log(7);
             // Clear cart
             const cart = await Cart.findOne({ userId: order.userId });
             if (cart) {
@@ -259,6 +281,7 @@ class OrderController {
               cart.totalAmount = 0;
               await cart.save();
             }
+            // console.log(8);
 
             return res.status(200).json({
               message: "Payment verified and order confirmed",
