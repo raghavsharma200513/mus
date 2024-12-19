@@ -43,20 +43,15 @@ interface CartData {
 const Cart = () => {
   const navigate = useNavigate();
   const [cartData, setCartData] = useState<CartData | null>(null);
-  console.log("cartData", cartData);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [updating, setUpdating] = useState<string | null>(null);
   const context = useContext(LanguageContext);
 
   if (!context) {
     throw new Error("LanguageSelector must be used within a LanguageProvider");
   }
   const { language } = context;
-  //  const imageUrl = data.image
-  //   ? `${import.meta.env.VITE_BACKEND_URL}${data.image}`
-  //   : assets.menu5;
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [updating, setUpdating] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCartData();
@@ -75,6 +70,8 @@ const Cart = () => {
       );
       if (!response.ok) throw new Error("Failed to fetch cart data");
       const data = await response.json();
+      console.log(data);
+
       setCartData(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -184,6 +181,9 @@ const Cart = () => {
 
         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
           <div className="flex-1 space-y-6">
+            {!cartData?.items.length && (
+              <div className=" font-semibold text-2xl">No items in cart</div>
+            )}
             {cartData.items.map((item) => {
               // console.log("item", item);
 
@@ -313,41 +313,6 @@ const Cart = () => {
                 </span>
               </div>
             </div>
-
-            {/* <div className="mt-6">
-              <label
-                htmlFor="coupon"
-                className="block text-lg font-medium mb-2"
-              >
-                Have a Coupon?
-              </label>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="text"
-                  id="coupon"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Enter coupon code"
-                  className="flex-1 px-4 py-2 border rounded-lg text-sm"
-                  disabled={applyingCoupon}
-                />
-                <button
-                  onClick={applyCoupon}
-                  disabled={applyingCoupon}
-                  className="bg-aliceblue text-[#2e0a16] rounded-lg border-2 border-[#2e0a16] px-5 py-2 hover:bg-[#2e0a16] hover:text-white whitespace-nowrap text-sm font-medium"
-                >
-                  {applyingCoupon ? "Applying..." : "Apply"}
-                </button>
-              </div>
-              {couponError && (
-                <p className="text-red-500 text-sm mt-2">{couponError}</p>
-              )}
-              {appliedCoupon && (
-                <p className="text-green-600 text-sm mt-2">
-                  Coupon {appliedCoupon.code} applied successfully!
-                </p>
-              )}
-            </div> */}
 
             <div className="border-t mt-6 pt-4 flex justify-between items-center">
               <span className="text-lg md:text-xl font-bold text-[#2E0A16]">

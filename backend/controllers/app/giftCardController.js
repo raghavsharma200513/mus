@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const sendEmail = require("../../config/mailer");
 
 paypal.configure({
-  mode: "sandbox", // Use "live" for production
+  mode: process.env.PAYPAL_MODE, // Use "live" for production
   client_id: process.env.PAYPAL_CLIENT_ID,
   client_secret: process.env.YOUR_CLIENT_SECRET,
 });

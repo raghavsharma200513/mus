@@ -270,6 +270,16 @@ const Review: React.FC = () => {
       alert("You don't have any item in the cart");
       return;
     }
+
+    if (paymentMethod !== "pod" && total < 30) {
+      alert(
+        language == "en"
+          ? "Minimum order value for delivery is 30€. Please add more items to continue."
+          : "Mindestbestellwert für die Lieferung beträgt 30€. Bitte fügen Sie weitere Artikel hinzu, um fortzufahren."
+      );
+      return;
+    }
+
     if (!selectedAddress) {
       alert("Please select a delivery address");
       return;

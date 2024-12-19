@@ -51,9 +51,11 @@ import google4 from "./google4.png";
 import Picsart from "./Picsart.png";
 import WhatsApp from "./WhatsApp.jpg";
 import WhatsAppVideo from "./WhatsApp Video.mp4";
+import restimg from "./restimg.png";
 
 export const assets = {
   Picsart,
+  restimg,
   WhatsApp,
   WhatsAppVideo,
   coriander,

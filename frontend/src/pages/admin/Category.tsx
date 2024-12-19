@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Trash2 } from "lucide-react";
 
 // Define interface for Category
 interface Category {
@@ -10,6 +11,7 @@ interface Category {
 
 // Define interface for Category Data
 interface CategoryData {
+  _id: string | null;
   name: string;
   image: File | null;
 }
@@ -18,6 +20,7 @@ const CategoryManagement: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [categoryData, setCategoryData] = useState<CategoryData>({
+    _id: "",
     name: "",
     image: null,
   });
@@ -84,6 +87,7 @@ const CategoryManagement: React.FC = () => {
 
   const resetForm = () => {
     setCategoryData({
+      _id: "",
       name: "",
       image: null,
     });
@@ -93,9 +97,28 @@ const CategoryManagement: React.FC = () => {
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
     setCategoryData({
+      _id: category._id,
       name: category.name,
       image: null, // Reset image input when editing
     });
+  };
+
+  const handleDelete = async (itemId: string) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this category? If you delete this category, all the item under this category will be delete it."
+      )
+    ) {
+      try {
+        await axios.delete(
+          `${import.meta.env.VITE_BACKEND_URL}/api/category/${itemId}`
+        );
+        fetchCategories();
+        resetForm();
+      } catch (error) {
+        console.error("Failed to delete menu item:", error);
+      }
+    }
   };
 
   return (
@@ -171,6 +194,12 @@ const CategoryManagement: React.FC = () => {
                       className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
                     >
                       Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition"
+                    >
+                      <Trash2 size={16} />
                     </button>
                   </td>
                 </tr>

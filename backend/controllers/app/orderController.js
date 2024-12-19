@@ -9,7 +9,7 @@ const paypal = require("paypal-rest-sdk");
 const sendEmail = require("../../config/mailer");
 
 paypal.configure({
-  mode: "live", // Change to 'live' for production
+  mode: process.env.PAYPAL_MODE, // Change to 'live' for production. 'sandbox'
   client_id: process.env.PAYPAL_CLIENT_ID,
   client_secret: process.env.YOUR_CLIENT_SECRET,
 });

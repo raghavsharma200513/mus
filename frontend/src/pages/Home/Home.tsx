@@ -158,7 +158,7 @@ const Home = () => {
         desc: "Savor the flavors of royal Indian cuisine, where every dish is a celebration of heritage and flavor.",
       },
       {
-        img: assets.highQ2,
+        img: assets.restimg,
         title: "Art-Focused Decor",
         desc: "Admire our art-focused decor that showcases the beauty of Indo-German culture while dining in elegance.",
       },
@@ -180,7 +180,7 @@ const Home = () => {
         desc: "Genießen Sie die Aromen der königlichen indischen Küche, in der jedes Gericht eine Feier von Tradition und Geschmack ist.",
       },
       {
-        img: assets.highQ2,
+        img: assets.restimg,
         title: "Kunstorientiertes Dekor",
         desc: "Bewundern Sie unser kunstvolles Dekor, das die Schönheit der indo-deutschen Kultur in eleganter Atmosphäre widerspiegelt.",
       },
@@ -244,7 +244,7 @@ const Home = () => {
             display: "block",
           }}
         ></video>
-        <div className="showcaseOverlay pt-24 pb-28 relative z-1 h-[100vh] bg-black/50 w-full">
+        <div className="showcaseOverlay pt-24 pb-28 relative z-1 h-[100vh] bg-black/30 sm:bg-black/50 w-full">
           <div className="showcaseContent max-w-4xl mx-auto px-4">
             <h1 className="font-cormorantG text-[40px] sm:text-[60px] md:text-[80px] lg:text-[100px] leading-[1.2] text-center font-semibold">
               {language == "de"
