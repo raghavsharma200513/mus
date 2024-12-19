@@ -17,8 +17,73 @@ const GiftCard = () => {
   if (!context) {
     throw new Error("LanguageSelector must be used within a LanguageProvider");
   }
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
 
   const { language } = context;
+
+  // const handleBuyNow = async () => {
+  //   // Validate amount is a whole number
+  //   const amount =
+  //     typeof selectedAmount === "string"
+  //       ? parseInt(selectedAmount, 10)
+  //       : selectedAmount;
+
+  //   if (!Number.isInteger(amount) || amount <= 0) {
+  //     alert(
+  //       language === "en"
+  //         ? "Please enter a valid whole number amount in euros"
+  //         : "Bitte geben Sie einen gültigen ganzzahligen Betrag in Euro ein"
+  //     );
+  //     return;
+  //   }
+
+  //   if (!recipientEmail) {
+  //     alert(
+  //       language === "en"
+  //         ? "Please enter recipient email"
+  //         : "Bitte geben Sie die E-Mail des Empfängers ein"
+  //     );
+  //     return;
+  //   }
+
+  //   setIsProcessing(true);
+  //   try {
+  //     const { data } = await axios.post(
+  //       `${import.meta.env.VITE_BACKEND_URL}/api/giftcard/create`,
+  //       {
+  //         recipientEmail,
+  //         amount: amount,
+  //         message,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //         },
+  //       }
+  //     );
+
+  //     const approvalUrl = data.links.find(
+  //       (link: { rel: string }) => link.rel === "approval_url"
+  //     );
+
+  //     if (approvalUrl) {
+  //       window.location.href = approvalUrl.href;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error creating gift card:", error);
+  //     alert(
+  //       language === "en"
+  //         ? "Failed to create gift card. Please try again."
+  //         : "Geschenkkarte konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
+  //     );
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
 
   const handleBuyNow = async () => {
     // Validate amount is a whole number
@@ -41,6 +106,16 @@ const GiftCard = () => {
         language === "en"
           ? "Please enter recipient email"
           : "Bitte geben Sie die E-Mail des Empfängers ein"
+      );
+      return;
+    }
+
+    // Add email validation check
+    if (!isValidEmail(recipientEmail)) {
+      alert(
+        language === "en"
+          ? "Please enter a valid email address"
+          : "Bitte geben Sie eine gültige E-Mail-Adresse ein"
       );
       return;
     }
@@ -80,7 +155,6 @@ const GiftCard = () => {
       setIsProcessing(false);
     }
   };
-
   const StandardGiftCardItem = ({ amount }: { amount: number }) => (
     <div className="flex gap-6 flex-col">
       <svg
