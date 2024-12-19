@@ -74,7 +74,7 @@ const Home = () => {
   const showcaseSection = {
     en: {
       title: "Museum Restaurant",
-      desc: "A Taste of Royalty with Majestic Flavors of India – Where Tradition Meets Elegance.",
+      desc: "A Taste of Royalty with Majestic Flavors of India – Where Tradition Meets Elegance",
     },
     de: {
       title: "Museum Restaurant",
@@ -124,7 +124,7 @@ const Home = () => {
       {
         img: assets.disc4img,
         title: "Regional Art",
-        desc: "Explore the grandeur of this iconic castle, a symbol of royal history and elegance.",
+        desc: "Explore local art galleries and our restaurant’s captivating artistic displays.",
       },
     ],
   };
@@ -259,7 +259,7 @@ const Home = () => {
             <div className="btns flex flex-col sm:flex-row mt-8 items-center justify-center gap-6">
               <a href="#table" className="w-full sm:w-auto">
                 <button className="flex gap-1 text-white bg-secondary items-center justify-center font-jost w-full sm:w-[200px] h-[50px] rounded hover:bg-secondary/80 transition-colors duration-500">
-                  {language == "en" ? "BOOK A TABLE" : "TISCH RESERVIEREN"}
+                  {language == "en" ? "RESERVE A TABLE" : "TISCH RESERVIEREN"}
                 </button>
               </a>
               <button
@@ -281,7 +281,7 @@ const Home = () => {
           </h2>
           <h3 className="text-[25px] font-jost font-medium mb-6 ">
             {language == "en"
-              ? "Experience the elegance of India’s royal culinary traditions. Taste history and spices in every bite."
+              ? "Experience the elegance of India’s royal culinary traditions. Taste history and spices in every bite"
               : "Tauchen Sie ein in die Eleganz der königlichen kulinarischen Traditionen Indiens. Genießen Sie Geschichte und Gewürze mit jedem Bissen"}
           </h3>
           <p className="mb-4 leading-7">
@@ -297,7 +297,7 @@ const Home = () => {
             onClick={() => navigate("/menu")}
             className="flex gap-1 mx-auto  text-white bg-primary items-center place-content-center content-center font-jost w-[175px] h-[50px] rounded hover:bg-primary/80 transition-color duration-500 "
           >
-            {language == "en" ? "Menu" : "SPEISEKARTE"}
+            {language == "en" ? "MENU" : "SPEISEKARTE"}
           </button>
         </div>
       </section>
@@ -370,11 +370,11 @@ const Home = () => {
           </h2>
           <p className="text-center font-jost text-base md:text-lg text-[#554539] max-w-2xl lg:max-w-5xl mx-auto">
             {language == "en"
-              ? `Inspired by the historic grandeur of Hohenzollern Castle, our Indian
+              ? `"Inspired by the historic grandeur of Hohenzollern Castle, our Indian
         restaurant is a celebration of royal traditions and timeless taste.
         With a focus on traditional spices and historic elegance, our
         restaurant brings the culinary splendor of India’s royal heritage to
-        every dish. A truly majestic dining experience awaits you.`
+        every dish. A truly majestic dining experience awaits you."`
               : "„Inspiriert von der historischen Pracht der Burg Hohenzollern, feiert unser indisches Restaurant die königlichen Traditionen und zeitlosen Geschmacksrichtungen. Mit einem Fokus auf traditionelle Gewürze und historische Eleganz bringt unser Restaurant den kulinarischen Glanz des königlichen Erbes Indiens auf jeden Teller. Ein wahrhaft majestätisches kulinarisches Erlebnis erwartet Sie.“"}
           </p>
         </div>
@@ -383,7 +383,7 @@ const Home = () => {
         <div className="btns flex flex-col sm:flex-row mt-10 lg:mt-14 items-center justify-center gap-4 sm:gap-6">
           <a href="#table">
             <button className="flex gap-1 text-white bg-primary items-center justify-center font-jost w-[160px] sm:w-[175px] h-[45px] sm:h-[50px] rounded hover:bg-primary/80 transition-color duration-500">
-              {language == "en" ? "RESERVE TABLE" : "TISCH RESERVIEREN"}
+              {language == "en" ? "RESERVE A TABLE" : "TISCH RESERVIEREN"}
             </button>
           </a>
           <button
@@ -446,7 +446,7 @@ const Home = () => {
           {/* Form Container */}
           <div className="form-container basis-full lg:basis-3/5 py-10 px-6">
             <h2 className="text-[#554539] font-jost font-bold text-2xl sm:text-3xl lg:text-4xl text-center mb-4">
-              {language == "en" ? "Reserve A Table" : "Tischreservierung"}
+              {language == "en" ? "Table Reservation" : "Tischreservierung"}
             </h2>
             <ReserveTableForm></ReserveTableForm>
           </div>
@@ -542,7 +542,7 @@ const Home = () => {
             : "„Unsere Geschenkkarten schenken ein unvergessliches Erlebnis: Ein königliches Fest mit indischen Gewürzen und Geschmackswelten. Perfekt für alle, die gutes Essen und kulturelle Vielfalt schätzen.“"}
         </p>
         <Link to={"/gift-card"}>
-          <button className="flex gap-1 text-white bg-secondary items-center place-content-center content-center font-jost w-[200px] h-[50px] rounded hover:bg-secondary/80 mx-auto transition-color uppercase duration-500">
+          <button className="flex gap-1 text-white bg-secondary items-center place-content-center content-center font-jost p-4 h-[50px] rounded hover:bg-secondary/80 mx-auto transition-color uppercase duration-500">
             {language == "en"
               ? "View All Gift Cards"
               : "GESCHENKKARTEN ENTDECKEN"}

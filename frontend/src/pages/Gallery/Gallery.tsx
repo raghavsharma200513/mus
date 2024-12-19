@@ -38,7 +38,7 @@ function Gallery() {
     <main>
       <div className="page-title">
         <h1>{language == "en" ? "Gallery" : "Galerie"}</h1>
-        <h2>HOME / GALLERY</h2>
+        <h2>{language == "en" ? "HOME / GALLERY" : "STARTSEITE / GALERIE"}</h2>
       </div>
       <div className="gallery-grid-container min-h-[calc(50vh)] flex-col text-[#554939] text-lg gap-8 font-jost font-medium flex items-center justify-center my-12 mx-4">
         <div className={classes.galleryGrid}>

@@ -50,7 +50,7 @@ const Cart = () => {
     throw new Error("LanguageSelector must be used within a LanguageProvider");
   }
   const { language } = context;
-  // const imageUrl = data.image
+  //  const imageUrl = data.image
   //   ? `${import.meta.env.VITE_BACKEND_URL}${data.image}`
   //   : assets.menu5;
 

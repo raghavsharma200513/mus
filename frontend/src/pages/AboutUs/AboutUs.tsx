@@ -54,7 +54,9 @@ function AboutUs() {
         <h1 className="text-3xl md:text-4xl font-bold text-[#554539]">
           {language == "en" ? "About Us" : "Über Uns"}
         </h1>
-        <h2 className="text-lg text-gray-600">Home / About Us</h2>
+        <h2 className="text-lg text-gray-600">
+          {language == "en" ? "Home / About Us" : "STARTSEITE / ÜBER UNS"}
+        </h2>
       </div>
 
       {/* About Section */}

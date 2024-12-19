@@ -160,7 +160,7 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary, color }) => {
                     className="bg-white"
                     placeholder={
                       language === "en"
-                        ? "Enter your email"
+                        ? "Enter your email address"
                         : "E-Mail Adresse eingeben"
                     }
                     {...field}
@@ -196,8 +196,8 @@ const ContactForm: React.FC<ContactProps> = ({ btnPrimary, color }) => {
         />
         <p className={`font-jost text-sm text-${color}`}>
           {language == "en"
-            ? "By sending this message, I agree to the data protection policy and the electronic collection and storage of my data to answer my request."
-            : "Mit dem Absenden dieser Nachricht stimme ich der Datenschutzerklärung zu und der elektronischen Erfassung sowie Speicherung meiner Daten zur Beantwortung meiner Anfrage."}
+            ? "By sending this message, I consent to the data protection policy and the electronic collection and storage of my data to answer my request."
+            : "Mit dem Absenden dieser Nachricht stimme ich der Datenschutzerklärung und der elektronischen Erfassung sowie Speicherung meiner Daten zur Beantwortung meiner Anfrage zu."}
         </p>
 
         <FormField

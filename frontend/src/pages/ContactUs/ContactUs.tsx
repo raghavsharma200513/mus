@@ -43,7 +43,7 @@ function ContactUs() {
         <h1 className="text-3xl md:text-4xl font-bold">
           {language == "en" ? "Contact Us" : "Kontakt"}
         </h1>
-        <h2 className="text-sm text-gray-600 mt-2">HOME / CONTACT US</h2>
+        <h2 className="text-sm text-gray-600 mt-2">{language == "en" ? "HOME / CONTACT US" : "STARTSEITE / KONTAKT"}</h2>
       </div>
 
       {/* Message Section */}

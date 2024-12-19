@@ -134,7 +134,7 @@ function Menu(): JSX.Element {
     <main>
       <div className="page-title">
         <h1>{language == "en" ? "Menu" : "Speisekarte"}</h1>
-        <h2>HOME / MENU</h2>
+        <h2>{language == "en" ? "HOME / MENU" : "STARTSEITE / SPEISEKARTE"}</h2>
       </div>
 
       <div className="content min-h-[calc(80vh)] flex-col text-[#554939] gap-6 text-lg font-jost font-medium flex items-center justify-center">
@@ -146,7 +146,7 @@ function Menu(): JSX.Element {
               placeholder={
                 language === "en"
                   ? "Search menu items..."
-                  : "Menüpunkte suchen..."
+                  : "In der Speisekarte suchen..."
               }
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

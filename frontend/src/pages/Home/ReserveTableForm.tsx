@@ -138,7 +138,7 @@ function ReserveTableForm() {
       setTimeout(() => {
         setIsModalOpen(false);
         setIsSubmissionSuccessful(false);
-      }, 30000);
+      }, 3000000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverMessage = error.response?.data?.message || "Unknown error.";
@@ -228,7 +228,7 @@ function ReserveTableForm() {
                   <Input
                     placeholder={
                       language == "en"
-                        ? "Enter your email"
+                        ? "Enter your email address"
                         : "E-Mail Adresse eingeben"
                     }
                     {...field}
@@ -258,7 +258,7 @@ function ReserveTableForm() {
                           )}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, "PP")
                           ) : (
                             <span>
                               {language == "en"
@@ -350,7 +350,7 @@ function ReserveTableForm() {
                         <SelectItem key={i + 1} value={(i + 1).toString()}>
                           {language === "en"
                             ? `${i + 1} ${i === 0 ? "Person" : "Persons"}`
-                            : `${i + 1} Person(en)`}
+                            : `${i + 1} ${i === 0 ? "Person" : "Personen"}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -371,8 +371,8 @@ function ReserveTableForm() {
 
           <p className="font-jost text-sm text-center md:text-left">
             {language == "en"
-              ? "By reserving a table, I consent to the Privacy Policy."
-              : "Mit der Reservierung eines Tisches stimme ich der Datenschutzerklärung zu."}
+              ? "By reserving a table, I consent to the data protection policy and the electronic collection and storage of my data to answer my request."
+              : "Mit der Reservierung eines Tisches stimme ich der Datenschutzerklärung und der elektronischen Erfassung sowie Speicherung meiner Daten zur Beantwortung meiner Anfrage zu."}
           </p>
 
           <FormField
@@ -412,7 +412,7 @@ function ReserveTableForm() {
                   {" "}
                   {language == "en"
                     ? "Confirm Reservation"
-                    : "Bestätigen Sie die Reservierung"}
+                    : "Bestätigen Sie Ihre Reservierung!"}
                 </h2>
                 <img
                   src={assets.galBottom}
@@ -436,7 +436,7 @@ function ReserveTableForm() {
                   </p>
                   <p>
                     <strong>{language == "en" ? "Date" : "Datum"}:</strong>{" "}
-                    {format(formData.date, "PPP")}
+                    {format(formData.date, "PP")}
                   </p>
                   <p>
                     <strong>{language == "en" ? "Time" : "Uhrzeit"}:</strong>{" "}
@@ -455,7 +455,7 @@ function ReserveTableForm() {
                 <Button
                   variant="outline"
                   onClick={handleCloseModal}
-                  className="hover:bg-gray-100 transition-colors"
+                  className="hover:bg-gray-100 transition-colors border-black"
                 >
                   {language == "en" ? "Cancel" : "Abbrechen"}
                 </Button>

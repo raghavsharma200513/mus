@@ -101,6 +101,7 @@ const Navbar: React.FC = () => {
         {/* Logo */}
         <Link to="/" className="flex align-middle items-center gap-2">
           <img src={assets.logo} className="w-14" alt="Logo" />
+          <h1 className="text-white text-xl font-semibold">MUSEUM RESTURENT</h1>
         </Link>
 
         {/* Desktop Navigation Menu */}
