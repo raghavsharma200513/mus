@@ -198,7 +198,7 @@ class OrderController {
             {
               amount: {
                 currency: "EUR",
-                total: total,
+                total: total.toString(),
               },
               description: "Payment description",
             },
