@@ -23,6 +23,9 @@ const reservationSchema = new mongoose.Schema(
     status: {
       type: String,
     },
+    cancellationReason: {
+      type: String,
+    },
   },
   {
     timestamps: true,

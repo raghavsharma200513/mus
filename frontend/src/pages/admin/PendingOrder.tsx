@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
 import axios from "axios";
-
-// Import a sound file (you'll need to add this to your project)
-// Note: Replace with your actual path to the notification sound
 import notificationSound from "../../assets/mixkit-arabian-mystery-harp-notification-2489.wav";
 
 // TypeScript interfaces for type safety
@@ -35,33 +32,43 @@ interface Order {
   paymentMethod: string;
 }
 
-const PendingOrdersTable: React.FC = () => {
-  // State management
-  const [orders, setOrders] = useState<Order[]>([]);
-  console.log("orders", orders);
+const CANCELLATION_REASONS = [
+  { id: "out-of-stock", label: "Out of stock" },
+  {
+    id: "delivery-location",
+    label: "Unable to deliver to the provided location",
+  },
+  {
+    id: "restaurant-closed",
+    label: "Restaurant closed (holiday, maintenance, etc.)",
+  },
+  { id: "incorrect-details", label: "Incorrect order details" },
+  { id: "customer-request", label: "Customer requested cancellation" },
+  { id: "delay", label: "Delay in preparation or delivery" },
+  { id: "other", label: "Other" },
+];
 
+const PendingOrdersTable: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [cancelReason, setCancelReason] = useState<string>("");
+  const [customReason, setCustomReason] = useState<string>("");
 
   // Refs for tracking orders and audio
   const previousOrdersRef = useRef<Order[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const soundIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch orders initially and set up auto-refresh
   useEffect(() => {
-    // Initialize audio
     audioRef.current = new Audio(notificationSound);
-
     fetchOrders();
-
-    // Set up interval for auto-refresh every minute
     const intervalId = setInterval(fetchOrders, 20 * 1000);
 
-    // Cleanup interval on component unmount
     return () => {
       clearInterval(intervalId);
-      // Stop any ongoing sound
       if (soundIntervalRef.current) {
         clearInterval(soundIntervalRef.current);
       }
@@ -71,9 +78,7 @@ const PendingOrdersTable: React.FC = () => {
     };
   }, []);
 
-  // Compare orders and play sound if new orders arrive
   useEffect(() => {
-    // Check if there are new orders
     const isNewOrder =
       orders.length > previousOrdersRef.current.length ||
       (orders.length > 0 &&
@@ -83,18 +88,14 @@ const PendingOrdersTable: React.FC = () => {
       playNotificationSound();
     }
 
-    // Update previous orders
     previousOrdersRef.current = orders;
   }, [orders]);
 
-  // Play notification sound when new orders arrive
   const playNotificationSound = () => {
-    // Stop any existing interval
     if (soundIntervalRef.current) {
       clearInterval(soundIntervalRef.current);
     }
 
-    // Play sound repeatedly until action is taken
     const playSound = () => {
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
@@ -102,35 +103,25 @@ const PendingOrdersTable: React.FC = () => {
       }
     };
 
-    // Initial play
     playSound();
-
-    // Set up interval to repeat sound
     soundIntervalRef.current = setInterval(playSound, 3000);
   };
 
-  // Stop notification sound when order is acted upon
   const stopNotificationSound = () => {
-    // Stop sound interval
     if (soundIntervalRef.current) {
       clearInterval(soundIntervalRef.current);
       soundIntervalRef.current = null;
     }
-
-    // Pause audio
     if (audioRef.current) {
       audioRef.current.pause();
     }
   };
 
-  // Fetch pending orders
   const fetchOrders = async () => {
     try {
       const { data } = await axios.post<Order[]>(
         import.meta.env.VITE_BACKEND_URL + "/api/orders/pendingOrders",
-        {
-          status: "pending",
-        },
+        { status: "pending" },
         {
           headers: {
             "Content-Type": "application/json",
@@ -149,14 +140,18 @@ const PendingOrdersTable: React.FC = () => {
     }
   };
 
-  // Update order status
-  const updateOrderStatus = async (orderId: string, status: string) => {
+  const updateOrderStatus = async (
+    orderId: string,
+    status: string,
+    reason?: string
+  ) => {
     try {
       const response = await axios.put(
         import.meta.env.VITE_BACKEND_URL + "/api/orders/updateStatus",
         {
           orderId,
           status,
+          cancellationReason: reason,
         },
         {
           headers: {
@@ -172,10 +167,7 @@ const PendingOrdersTable: React.FC = () => {
         );
       }
 
-      // Stop notification sound when order is acted upon
       stopNotificationSound();
-
-      // Refresh orders after status update
       await fetchOrders();
     } catch (err) {
       if (err instanceof Error) {
@@ -186,17 +178,93 @@ const PendingOrdersTable: React.FC = () => {
     }
   };
 
-  // Handle order acceptance
   const handleAccept = async (orderId: string) => {
     await updateOrderStatus(orderId, "accepted");
   };
 
-  // Handle order cancellation
-  const handleCancel = async (orderId: string) => {
-    await updateOrderStatus(orderId, "cancelled");
+  const handleCancelClick = (orderId: string) => {
+    setSelectedOrder(orderId);
+    setShowCancelModal(true);
   };
 
-  // Loading state
+  const handleCancelConfirm = async () => {
+    if (!selectedOrder) return;
+
+    const finalReason =
+      cancelReason === "other"
+        ? customReason
+        : CANCELLATION_REASONS.find((r) => r.id === cancelReason)?.label || "";
+
+    await updateOrderStatus(selectedOrder, "cancelled", finalReason);
+    setShowCancelModal(false);
+    setSelectedOrder(null);
+    setCancelReason("");
+    setCustomReason("");
+  };
+
+  // Cancel Modal Component
+  const CancelModal = () => {
+    if (!showCancelModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <h2 className="text-xl font-semibold mb-4">Cancel Order</h2>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Reason for Cancellation
+            </label>
+            <select
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">Select a reason</option>
+              {CANCELLATION_REASONS.map((reason) => (
+                <option key={reason.id} value={reason.id}>
+                  {reason.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {cancelReason === "other" && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Custom Reason
+              </label>
+              <textarea
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md"
+                rows={3}
+                placeholder="Enter custom reason..."
+              />
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setShowCancelModal(false)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+            >
+              Close
+            </button>
+            <button
+              onClick={handleCancelConfirm}
+              disabled={
+                !cancelReason || (cancelReason === "other" && !customReason)
+              }
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Confirm Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -205,12 +273,10 @@ const PendingOrdersTable: React.FC = () => {
     );
   }
 
-  // Error state
   if (error) {
     return <div className="text-red-500 p-4">Error: {error}</div>;
   }
 
-  // Render orders table
   return (
     <div className="w-full overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-200 rounded-lg">
@@ -235,7 +301,6 @@ const PendingOrdersTable: React.FC = () => {
               <td className="p-4">
                 {order.items.map((item) => (
                   <div key={item._id}>
-                    {/* <span>{index}.</span><br /> */}
                     <b>
                       {item.quantity}x {item.name} ({item.variants[0].name})
                     </b>
@@ -270,7 +335,7 @@ const PendingOrdersTable: React.FC = () => {
                     Accept
                   </button>
                   <button
-                    onClick={() => handleCancel(order._id)}
+                    onClick={() => handleCancelClick(order._id)}
                     className="flex items-center px-3 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded"
                     disabled={loading}
                   >
@@ -283,6 +348,7 @@ const PendingOrdersTable: React.FC = () => {
           ))}
         </tbody>
       </table>
+      <CancelModal />
     </div>
   );
 };

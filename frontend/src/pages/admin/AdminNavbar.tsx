@@ -1,4 +1,4 @@
-import { Code, Group, ScrollArea } from "@mantine/core";
+import { Group, ScrollArea } from "@mantine/core";
 import { LinksGroup } from "./NavbarLinksGroup";
 import { UserButton } from "./UserButton";
 import { Logo } from "./Logo";
@@ -20,6 +20,7 @@ const mockdata = [
   { label: "Message", link: "/adminnavbar/message" },
   { label: "Gallery", link: "/adminnavbar/gallery" },
   { label: "Banner", link: "/adminnavbar/banner" },
+  { label: "Policy", link: "/adminnavbar/policy" },
   {
     label: "Menu",
     initiallyOpened: false,
@@ -59,7 +60,6 @@ export default function NavbarNested() {
       <div className={classes.header}>
         <Group justify="space-between">
           <Logo style={{ width: 120 }} />
-          <Code fw={700}>v3.1.2</Code>
         </Group>
       </div>
 

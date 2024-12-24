@@ -36,6 +36,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     paymentId: String,
+    cancellationReason: String,
     payerId: String,
     amount: Number,
     paymentStatus: String,

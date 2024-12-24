@@ -8,20 +8,40 @@ function Admin() {
   const location = useLocation();
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       const token = localStorage.getItem("token");
+
       if (!token) {
+        navigate("/");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/isadmin`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 401) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
         navigate("/");
       }
     };
 
     checkAuth();
 
-    // This will run whenever the URL changes
     return () => {
       // Cleanup if needed
     };
-  }, [navigate, location.pathname]); // Dependencies include navigation and URL path
+  }, [navigate, location.pathname]);
 
   return (
     <>

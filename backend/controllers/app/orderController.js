@@ -176,6 +176,168 @@ class OrderController {
           giftCard.status = "redeemed";
           await giftCard.save();
         }
+        console.log("order", order);
+
+        const formatItemsWithVariantsAndAddOns = (items) =>
+          items
+            .map(
+              (item, index) => `
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;" colspan="3">
+                    <strong>${index + 1}. ${item.name}</strong>
+                  </td>
+                </tr>
+                ${
+                  item.variants.length > 0
+                    ? `<tr>
+                         <td style="padding: 10px; border: 1px solid #ddd; color: #555;">
+                           Variant:
+                         </td>
+                         <td colspan="2" style="padding: 10px; border: 1px solid #ddd;">
+                           ${item.variants
+                             .map(
+                               (variant) =>
+                                 `${variant.name} (₹${variant.price})`
+                             )
+                             .join(", ")}
+                         </td>
+                       </tr>`
+                    : ""
+                }
+                ${
+                  item.addOns.length > 0
+                    ? `<tr>
+                         <td style="padding: 10px; border: 1px solid #ddd; color: #555;">
+                           Add-Ons:
+                         </td>
+                         <td colspan="2" style="padding: 10px; border: 1px solid #ddd;">
+                           ${item.addOns
+                             .map(
+                               (addOn) =>
+                                 `${addOn.name} (Qty: ${addOn.quantity}, ₹${addOn.price})`
+                             )
+                             .join(", ")}
+                         </td>
+                       </tr>`
+                    : ""
+                }
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;">Quantity</td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${
+                    item.quantity
+                  }</td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">₹${
+                    item.price
+                  }</td>
+                </tr>`
+            )
+            .join("");
+
+        const emailContent = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px;">
+          <h2 style="text-align: center; color: #d35400;">Museum Restaurant</h2>
+          <p><strong>Dear Museum Restaurant Team,</strong></p>
+          <p>You have received a new order from your website. Below are the order details:</p>
+          <h4>Customer Details:</h4>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;"><strong>Name:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${
+                order.address.fullName
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;"><strong>Phone Number:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${
+                order.phone
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;"><strong>Email:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${
+                order.email
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;"><strong>Delivery Address:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">
+                ${order.address.fullName},<br>
+                ${order.address.addressLine1},<br>
+                ${order.address.city}, ${order.address.state}, ${
+          order.address.zipCode
+        },<br>
+                ${order.address.country}
+              </td>
+            </tr>
+          </table>
+          <h4>Order Details:</h4>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;"><strong>Order Number:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${
+                order._id
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;"><strong>Order Date & Time:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${new Date(
+                order.createdAt
+              ).toLocaleString("en-US")}</td>
+            </tr>
+          </table>
+          <h4>Items Ordered:</h4>
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+            <tr>
+              <th style="padding: 10px; border: 1px solid #ddd;">Item</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Quantity</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
+            </tr>
+            ${formatItemsWithVariantsAndAddOns(order.items)}
+          </table>
+          <h4>Payment Summary:</h4>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;"><strong>Total Amount:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₹${
+                order.orderTotal
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;"><strong>Payment Method:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">${
+                order.paymentMethod
+              }</td>
+            </tr>
+          </table>
+          <h4>Special Instructions (if any):</h4>
+          <p style="padding: 10px; border: 1px solid #ddd;">${
+            order.specialInstructions || "None"
+          }</p>
+          <p>
+            Please ensure this order is prepared and delivered/picked up promptly. If you have any questions or need to contact the customer, they can be reached at ${
+              order.phone
+            }.
+          </p>
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${
+              process.env.DOMAIN
+            }adminnavbar" style="background-color: #d35400; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Pending Orders</a>
+          </div>
+          <p>Thank you,</p>
+          <p><a href="${
+            process.env.DOMAIN
+          }">www.museum-restaurant-hechingen.de</a></p>
+        </div>
+        `;
+
+        const mail = await sendEmail(
+          "mandeepsingh227@yahoo.com",
+          // "prakhargaba@gmail.com",
+          `New Order Received from ${order.address.fullName}`,
+          "",
+          emailContent
+        );
+        // console.log("mail", mail);
 
         return res.status(201).json({
           order,
@@ -310,7 +472,7 @@ class OrderController {
   static async getAllPendingOrders(req, res) {
     const userId = req.userId;
     const { status } = req.body;
-    console.log("status", status);
+    // console.log("status", status);
 
     try {
       const user = await User.findOne({ _id: userId, role: "admin" }); // Changed `find` to `findOne`
@@ -443,7 +605,7 @@ class OrderController {
   }
 
   static async updateOrderStatus(req, res) {
-    const { orderId, status } = req.body;
+    const { orderId, status, cancellationReason } = req.body;
     const userId = req.userId;
 
     try {
@@ -459,24 +621,239 @@ class OrderController {
       }
 
       order.status = status;
+      order.cancellationReason = cancellationReason;
       await order.save();
+      const formatItems = (items) =>
+        items
+          .map(
+            (item) => `
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd;">
+                <strong>${item.name}</strong> (${item.quantity}x)
+                ${
+                  item.variants.length > 0
+                    ? `<br>Variant: ${item.variants[0].name}`
+                    : ""
+                }
+                ${
+                  item.addOns.length > 0
+                    ? `<br>Add-ons: ${item.addOns
+                        .map((addOn) => addOn.name)
+                        .join(", ")}`
+                    : ""
+                }
+              </td>
+              <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₹${
+                item.price
+              }</td>
+            </tr>`
+          )
+          .join("");
+
+      const emailContent = `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+        <h2 style="text-align: center; color: #d35400;">Museum Restaurant</h2>
+        <hr />
+        <p><strong>Sehr geehrte/r ${order.address.fullName},</strong></p>
+        <p>Vielen Dank, dass Sie sich für Museum Restaurant entschieden haben! Wir freuen uns, Ihre Bestellung zu bestätigen.</p>
+        <h4>Details Ihrer Bestellung:</h4>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td><strong>Bestellnummer:</strong></td>
+            <td>${order._id}</td>
+          </tr>
+          <tr>
+            <td><strong>Bestelldatum und -uhrzeit:</strong></td>
+            <td>${new Date(order.createdAt).toLocaleString("de-DE")}</td>
+          </tr>
+          <tr>
+            <td><strong>Name:</strong></td>
+            <td>${order.address.fullName}</td>
+          </tr>
+          <tr>
+            <td><strong>Telefonnummer:</strong></td>
+            <td>${order.phone}</td>
+          </tr>
+          <tr>
+            <td><strong>E-Mail:</strong></td>
+            <td>${order.email}</td>
+          </tr>
+          <tr>
+            <td><strong>Lieferadresse:</strong></td>
+            <td>${order.address.addressLine1}, ${order.address.city}, ${
+        order.address.state
+      }, ${order.address.zipCode}, ${order.address.country}</td>
+          </tr>
+          <tr>
+            <td><strong>Zahlungsart:</strong></td>
+            <td>${order.paymentMethod}</td>
+          </tr>
+        </table>
+        <h4>Artikel:</h4>
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+          ${formatItems(order.items)}
+        </table>
+        <h4>Zahlungsübersicht:</h4>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td><strong>Zwischensumme:</strong></td>
+            <td style="text-align: right;">₹${order.subtotal}</td>
+          </tr>
+          <tr>
+            <td><strong>Rabatt:</strong></td>
+            <td style="text-align: right;">₹${order.discount}</td>
+          </tr>
+          <tr>
+            <td><strong>Liefergebühr:</strong></td>
+            <td style="text-align: right;">₹${order.deliveryFee || 0}</td>
+          </tr>
+          <tr>
+            <td><strong>Gesamtbetrag:</strong></td>
+            <td style="text-align: right; font-size: 1.2em; font-weight: bold;">₹${
+              order.orderTotal
+            }</td>
+          </tr>
+        </table>
+        <p>Wir freuen uns darauf, Ihnen ein genussvolles Erlebnis voller Aromen Indiens zu bieten.</p>
+        <p>Für Fragen kontaktieren Sie uns unter <a href="mailto:mandeepsingh227@yahoo.com">mandeepsingh227@yahoo.com</a> oder +49747113015.</p>
+        <hr />
+        <p><strong>Dear ${order.address.fullName},</strong></p>
+        <p>Thank you for choosing Museum Restaurant! We are delighted to confirm your order.</p>
+        <h4>Order Details:</h4>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td><strong>Order ID:</strong></td>
+            <td>${order._id}</td>
+          </tr>
+          <tr>
+            <td><strong>Order Date & Time:</strong></td>
+            <td>${new Date(order.createdAt).toLocaleString("en-US")}</td>
+          </tr>
+          <tr>
+            <td><strong>Name:</strong></td>
+            <td>${order.address.fullName}</td>
+          </tr>
+          <tr>
+            <td><strong>Phone Number:</strong></td>
+            <td>${order.phone}</td>
+          </tr>
+          <tr>
+            <td><strong>Email:</strong></td>
+            <td>${order.email}</td>
+          </tr>
+          <tr>
+            <td><strong>Delivery Address:</strong></td>
+            <td>${order.address.addressLine1}, ${order.address.city}, ${
+        order.address.state
+      }, ${order.address.zipCode}, ${order.address.country}</td>
+          </tr>
+          <tr>
+            <td><strong>Payment Method:</strong></td>
+            <td>${order.paymentMethod}</td>
+          </tr>
+        </table>
+        <h4>Order Items:</h4>
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+          ${formatItems(order.items)}
+        </table>
+        <h4>Payment Summary:</h4>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td><strong>Subtotal:</strong></td>
+            <td style="text-align: right;">₹${order.subtotal}</td>
+          </tr>
+          <tr>
+            <td><strong>Discount:</strong></td>
+            <td style="text-align: right;">₹${order.discount}</td>
+          </tr>
+          <tr>
+            <td><strong>Delivery Fee:</strong></td>
+            <td style="text-align: right;">₹${order.deliveryFee || 0}</td>
+          </tr>
+          <tr>
+            <td><strong>Total:</strong></td>
+            <td style="text-align: right; font-size: 1.2em; font-weight: bold;">₹${
+              order.orderTotal
+            }</td>
+          </tr>
+        </table>
+        <p>We look forward to serving you a delightful dining experience filled with the flavors of India.</p>
+        <p>If you have any questions, contact us at <a href="mailto:mandeepsingh227@yahoo.com">mandeepsingh227@yahoo.com</a> or +49747113015.</p>
+        <hr />
+      </div>`;
+
+      const cancelEmail = `<div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px;">
+        <h2 style="text-align: center; color: #d35400;">Museum Restaurant</h2>
+        
+        <!-- German Section -->
+        <p><strong>Sehr geehrte/r ${order.address.fullName},</strong></p>
+        <p>
+          Wir bedauern, Ihnen mitteilen zu müssen, dass Ihre kürzlich bei uns aufgegebene Bestellung (Bestellnummer: <strong>${order._id}</strong>) aus folgendem Grund storniert wurde:
+        </p>
+        <p style="padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9;">${order.cancellationReason}</p>
+        <p>
+          Wir entschuldigen uns aufrichtig für etwaige Unannehmlichkeiten. Falls Sie bereits belastet wurden, wird eine Rückerstattung innerhalb von 30 Minuten auf Ihre ursprüngliche Zahlungsmethode erfolgen.
+        </p>
+        <p>
+          Falls Sie weitere Fragen haben oder eine neue Bestellung aufgeben möchten, kontaktieren Sie uns bitte unter:
+          <strong>+49 7471 13016</strong> oder <strong>mandeepsingh227@yahoo.com</strong>
+        </p>
+        <p>Vielen Dank für Ihr Verständnis, und wir freuen uns darauf, Sie in Zukunft bedienen zu dürfen.</p>
+        <p>Mit freundlichen Grüßen,</p>
+        <p>Museum Restaurant</p>
+        <p>
+          Folgen Sie uns auf unseren sozialen Medien:<br>
+          • <a href="https://www.facebook.com/profile.php?id=61554941725773" style="color: #d35400;">Facebook</a><br>
+          • <a href="https://www.instagram.com/museum.hechingen/" style="color: #d35400;">Instagram</a>
+        </p>
+      
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+      
+        <!-- English Section -->
+        <p><strong>Dear ${order.address.fullName},</strong></p>
+        <p>
+          We regret to inform you that your recent order with us (Order # <strong>${order._id}</strong>) has been cancelled due to the following reason:
+        </p>
+        <p style="padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9;">${order.cancellationReason}</p>
+        <p>
+          We sincerely apologize for any inconvenience this may have caused. If you have already been charged, a refund will be processed to your original payment method within 30 minutes.
+        </p>
+        <p>
+          If you have any questions or wish to place a new order, please contact us at:
+          <strong>+49 7471 13016</strong> or <strong>mandeepsingh227@yahoo.com</strong>
+        </p>
+        <p>Thank you for your understanding, and we look forward to serving you in the future.</p>
+        <p>Warm regards,</p>
+        <p>Museum Restaurant</p>
+        <p>
+          Follow us on social media:<br>
+          • <a href="https://www.facebook.com/profile.php?id=61554941725773" style="color: #d35400;">Facebook</a><br>
+          • <a href="https://www.instagram.com/museum.hechingen/" style="color: #d35400;">Instagram</a>
+        </p>
+      </div>
+      `;
+
       if (status === "accepted") {
         await sendEmail(
           order.address.email,
-          "Orderd Confirmed!",
-          `Your order has been successfully Confirmed. We look forward to serving you!`
+          "Ihre Bestellung ist bestätigt / Your Order is Confirmed",
+          "",
+          emailContent
         );
       }
       if (status === "cancelled") {
         await sendEmail(
           order.address.email,
           "Orderd Cancelled!",
-          `Your order has been cancelled. We look forward to serving you!`
+          ``,
+          cancelEmail
         );
       }
 
       res.status(200).json({ message: "Order status updated", order });
     } catch (error) {
+      console.log(error);
+
       res.status(500).json({ message: "Failed to update order status", error });
     }
   }

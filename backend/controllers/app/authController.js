@@ -12,6 +12,7 @@ const multer = require("multer");
 const root = process.cwd();
 const path = require("path");
 const fs = require("fs");
+const sendEmail = require("../../config/mailer");
 // const { success } = require("handy-log");
 
 // // Set The Storage Engine
@@ -380,6 +381,48 @@ class AuthController {
       if (!user) return res.status(401).send("User not found");
 
       res.send(user);
+    } catch (error) {
+      console.log(error);
+      return res.status(401).send(msg);
+    }
+  };
+
+  static isAdmin = async (req, res) => {
+    let msg = "Something went wrong please try again later";
+    const userId = req.userId;
+
+    try {
+      const user = await User.findOne({ _id: userId, role: "admin" });
+      if (!user) return res.status(401).send("Admin not found");
+
+      res.send(user);
+    } catch (error) {
+      console.log(error);
+      return res.status(401).send(msg);
+    }
+  };
+
+  static sample = async (req, res) => {
+    let msg = "Something went wrong please try again later";
+
+    try {
+      await sendEmail(
+        "prakhargaba@gmail.com",
+        "helo9o",
+        "",
+        `<p>Sehr geehrte/r [XXXX],</p>
+    <p>Vielen Dank, dass Sie sich für Museum Restaurant entschieden haben! Wir freuen uns, Ihre Tischreservierung zu bestätigen.</p>
+    <p>Hier sind die Details Ihrer Reservierung:</p>
+    <ul>
+        <li><strong>Name:</strong> [XXXX]</li>
+        <li><strong>Telefonnummer:</strong> [XXXX]</li>
+        <li><strong>E-Mail:</strong> [XXXX]</li>
+        <li><strong>Datum:</strong> [XXXX]</li>
+        <li><strong>Uhrzeit:</strong> [XXXX]</li>
+        <li><strong>Anzahl der Personen:</strong> [XXXX]</li>
+    </ul>`
+      );
+      res.send("Email sent successfully.");
     } catch (error) {
       console.log(error);
       return res.status(401).send(msg);

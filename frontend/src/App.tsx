@@ -30,6 +30,8 @@ import Confirmendreservation from "./pages/admin/confirmendreservation.tsx";
 import BannerManagement from "./pages/admin/BannerManagement.tsx";
 import AdminGallery from "./pages/admin/Gallery.tsx";
 import Reservation from "./pages/admin/reservation.tsx";
+import PolicyAdmin from "./pages/admin/Policy.tsx";
+import Policy from "./pages/AboutUs/Policy.tsx";
 import "./App.css";
 import "@mantine/core/styles.css";
 import ScrollToTop from "./components/ScrollToTop.tsx";
@@ -61,6 +63,7 @@ function App() {
             <Route path="add-address" element={<AddAddress />} />
             <Route path="order-confirmation" element={<Confirm />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="policy" element={<Policy />} />
           </Route>
 
           {/* Route that does not use the Layout */}
@@ -77,6 +80,7 @@ function App() {
             <Route path="category" element={<Category />} />
             <Route path="banner" element={<BannerManagement />} />
             <Route path="reservation" element={<Reservation />} />
+            <Route path="policy" element={<PolicyAdmin />} />
             <Route path="pendingreservation" element={<Pendingreservation />} />
             <Route
               path="confirmendreservation"

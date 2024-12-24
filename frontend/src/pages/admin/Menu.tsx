@@ -50,6 +50,8 @@ const MenuItemManagement: React.FC = () => {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchCategory, setSearchCategory] = useState("all");
   const [menuData, setMenuData] = useState<MenuData>({
     name: "",
     actualPrice: "",
@@ -59,6 +61,26 @@ const MenuItemManagement: React.FC = () => {
     image: null,
     addOns: [],
     variants: [{ name: "", price: "" }],
+  });
+
+  const filteredMenuItems = menuItems.filter((item) => {
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.actualPrice.toString().includes(searchQuery) ||
+      item.desc?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.variants &&
+        item.variants.some((variant) =>
+          variant.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )) ||
+      (item.addOns &&
+        item.addOns.some((addon) =>
+          addon.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ));
+
+    const matchesCategory =
+      searchCategory === "all" || item.category === searchCategory;
+
+    return matchesSearch && matchesCategory;
   });
 
   useEffect(() => {
@@ -157,6 +179,29 @@ const MenuItemManagement: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (menuData.variants.length === 0) {
+      alert("Please add at least one variant");
+      return;
+    }
+
+    // Validation for empty variants
+    const hasEmptyVariant = menuData.variants.some(
+      (variant) => !variant.name || !variant.price
+    );
+    if (hasEmptyVariant) {
+      alert("All variants must have both name and price");
+      return;
+    }
+
+    // Validation for empty add-ons
+    const hasEmptyAddOn = menuData.addOns.some(
+      (addon) => !addon.name || !addon.price
+    );
+    if (hasEmptyAddOn) {
+      alert("All add-ons must have both name and price");
+      return;
+    }
     const formData = new FormData();
 
     // Handle image separately
@@ -481,6 +526,28 @@ const MenuItemManagement: React.FC = () => {
       {/* <div className="bg-white shadow-md rounded-lg p-6"> */}
       <div className="bg-white shadow-md rounded-lg p-6 h-[calc(100vh-2rem)] sticky top-4 overflow-y-auto">
         <h2 className="text-2xl font-semibold mb-4">Menu Items</h2>
+        {/* <SearchSection /> */}
+        <div className="flex gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Search menu items..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 px-3 py-2 border rounded-md"
+          />
+          <select
+            value={searchCategory}
+            onChange={(e) => setSearchCategory(e.target.value)}
+            className="px-3 py-2 border rounded-md"
+          >
+            <option value="all">All Categories</option>
+            {categories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -493,7 +560,7 @@ const MenuItemManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {menuItems.map((item, index) => (
+              {filteredMenuItems.map((item, index) => (
                 <tr key={item._id} className="border-b">
                   <td className="px-4 py-2">{index + 1}</td>
                   <td className="px-4 py-2">{item.name}</td>

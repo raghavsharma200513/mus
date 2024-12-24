@@ -52,14 +52,17 @@ function Footer() {
       title: language === "en" ? "Legal" : "Rechtliche Hinweise",
       links: {
         de: [
-          { name: "Datenschutzerklärung", link: "/privacy-policy" },
-          { name: "Impressum", link: "/terms" },
-          { name: "Cookies", link: "/cookies" },
+          { name: "Datenschutzerklärung", link: "policy?type=privacy_policy" },
+          { name: "Impressum", link: "policy?type=terms_and_conditions" },
+          // { name: "Cookies", link: "/cookies" },
         ],
         en: [
-          { name: "Privacy Policy", link: "/privacy-policy" },
-          { name: "Terms of Conditions", link: "/terms" },
-          { name: "Cookies", link: "/cookies" },
+          { name: "Privacy Policy", link: "policy?type=privacy_policy" },
+          {
+            name: "Terms of Conditions",
+            link: "policy?type=terms_and_conditions",
+          },
+          // { name: "Cookies", link: "/cookies" },
         ],
       },
     },
@@ -140,7 +143,9 @@ function Footer() {
         {/* Newsletter Section */}
         <div className="w-full lg:w-1/3 text-center lg:text-left">
           <h2 className="font-jost font-semibold text-lg">
-            {language === "en" ? "Subscribe to Newsletter" : "Newsletter abonnieren"}
+            {language === "en"
+              ? "Subscribe to Newsletter"
+              : "Newsletter abonnieren"}
           </h2>
           <p className="font-jost text-sm mt-3 max-w-full lg:max-w-xs mx-auto lg:mx-0">
             {language === "en"

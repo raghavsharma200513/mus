@@ -13,6 +13,7 @@ const messageRoutes = require("./routes/app/messageRoutes");
 const giftCardRoutes = require("./routes/app/giftCardRoutes");
 const bannerRoutes = require("./routes/app/bannerRoutes");
 const newsletterRoutes = require("./routes/app/newsletterRoutes");
+const policyRoutes = require("./routes/app/policyRoutes");
 
 const AppRoutes = (app) => {
   app.use("/api/bookings", bookingRoutes);
@@ -30,6 +31,7 @@ const AppRoutes = (app) => {
   app.use("/api/giftcard", giftCardRoutes);
   app.use("/api/banner", bannerRoutes);
   app.use("/api/newsletter", newsletterRoutes);
+  app.use("/api/policy", policyRoutes);
 };
 
 module.exports = AppRoutes;

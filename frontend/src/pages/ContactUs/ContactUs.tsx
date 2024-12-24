@@ -32,8 +32,8 @@ function ContactUs() {
       title: language == "en" ? "Get In Touch" : "Unsere Kontaktdaten",
       content:
         language == "en"
-          ? "Telephone: +49 7471 13015<br>Email: abc@gmail.com<br><br>Contact Us"
-          : "Telefon: +49 7471 13015<br>E-Mail: abc@gmail.com<br><br>Kontakt aufnehmen!",
+          ? "Telephone: +49 7471 13015<br>Email: mandeepsingh227@yahoo.com<br><br>Contact Us"
+          : "Telefon: +49 7471 13015<br>E-Mail: mandeepsingh227@yahoo.com<br><br>Kontakt aufnehmen!",
     },
   ];
 

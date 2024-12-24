@@ -31,10 +31,29 @@ interface ReservationResponse {
   };
 }
 
+const CANCELLATION_REASONS = [
+  { id: "fully-booked", label: "Fully booked" },
+  { id: "outside-hours", label: "Outside operating hours" },
+  { id: "incorrect-details", label: "Incorrect reservation details" },
+  { id: "date-unavailable", label: "Specific date/time unavailable" },
+  {
+    id: "restaurant-closed",
+    label: "Restaurant closed (holiday, maintenance, etc.)",
+  },
+  { id: "large-party", label: "Large party size cannot be accommodated" },
+  { id: "other", label: "Other" },
+];
+
 const ReservationTable = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState<string | null>(
+    null
+  );
+  const [cancelReason, setCancelReason] = useState<string>("");
+  const [customReason, setCustomReason] = useState<string>("");
   const [pagination, setPagination] = useState<PaginationInfo>({
     currentPage: 1,
     totalPages: 1,
@@ -87,19 +106,46 @@ const ReservationTable = () => {
     fetchReservations(newPage);
   };
 
+  const handleAccept = async (reservationId: string) => {
+    await updateReservationStatus(reservationId, "accepted");
+  };
+
+  const handleCancelClick = (reservationId: string) => {
+    setSelectedReservation(reservationId);
+    setShowCancelModal(true);
+  };
+
+  const handleCancelConfirm = async () => {
+    if (!selectedReservation) return;
+
+    const finalReason =
+      cancelReason === "other"
+        ? customReason
+        : CANCELLATION_REASONS.find((r) => r.id === cancelReason)?.label || "";
+
+    await updateReservationStatus(
+      selectedReservation,
+      "cancelled",
+      finalReason
+    );
+    setShowCancelModal(false);
+    setSelectedReservation(null);
+    setCancelReason("");
+    setCustomReason("");
+  };
+
   // Update reservation status
   const updateReservationStatus = async (
     reservationId: string,
-    status: string
+    status: string,
+    reason?: string
   ) => {
-    console.log("reservationId", reservationId);
-    console.log("status", status);
-
     try {
       const response = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/api/reservation/${reservationId}`,
         {
           status,
+          cancellationReason: reason,
         },
         {
           headers: {
@@ -115,7 +161,6 @@ const ReservationTable = () => {
         );
       }
 
-      // Refresh current page
       await fetchReservations(pagination.currentPage);
     } catch (err) {
       if (err instanceof Error) {
@@ -127,20 +172,75 @@ const ReservationTable = () => {
     }
   };
 
-  const handleAccept = async (reservationId: string) => {
-    await updateReservationStatus(reservationId, "accepted");
-  };
-
-  const handleCancel = async (reservationId: string) => {
-    await updateReservationStatus(reservationId, "cancelled");
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
+  };
+
+  // Cancel Modal Component
+  const CancelModal = () => {
+    if (!showCancelModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <h2 className="text-xl font-semibold mb-4">Cancel Reservation</h2>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Reason for Cancellation
+            </label>
+            <select
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">Select a reason</option>
+              {CANCELLATION_REASONS.map((reason) => (
+                <option key={reason.id} value={reason.id}>
+                  {reason.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {cancelReason === "other" && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Custom Reason
+              </label>
+              <textarea
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md"
+                rows={3}
+                placeholder="Enter custom reason..."
+              />
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setShowCancelModal(false)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+            >
+              Close
+            </button>
+            <button
+              onClick={handleCancelConfirm}
+              disabled={
+                !cancelReason || (cancelReason === "other" && !customReason)
+              }
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Confirm Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Pagination Controls Component
@@ -268,7 +368,7 @@ const ReservationTable = () => {
                     Accept
                   </button>
                   <button
-                    onClick={() => handleCancel(reservation._id)}
+                    onClick={() => handleCancelClick(reservation._id)}
                     className="flex items-center px-3 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded"
                     disabled={loading}
                   >
@@ -282,6 +382,7 @@ const ReservationTable = () => {
         </tbody>
       </table>
       <PaginationControls />
+      <CancelModal />
     </div>
   );
 };

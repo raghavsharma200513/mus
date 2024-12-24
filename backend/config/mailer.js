@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (to, subject, body) => {
+const sendEmail = async (to, subject, body, html) => {
   return new Promise((resolve, reject) => {
     // Create transporter using Hostinger SMTP settings
     var transporter = nodemailer.createTransport({
@@ -14,12 +14,11 @@ const sendEmail = async (to, subject, body) => {
     });
 
     var mailOptions = {
-      from: "no-reply@taczclub.com", // Use the Hostinger email
-      to: to, // Dynamic recipient
+      from: "no-reply@taczclub.com",
+      to: to,
       subject: subject,
       text: body,
-      // Optionally, you can add HTML email support
-      // html: body // Uncomment if you want to send HTML emails
+      html: html,
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -27,7 +26,7 @@ const sendEmail = async (to, subject, body) => {
         console.error("Email sending error:", error);
         reject(error); // Changed to reject for better error handling
       } else {
-        console.log("Email sent successfully: " + info.response);
+        console.log("Email sent successfully: " + info);
         resolve(true);
       }
     });

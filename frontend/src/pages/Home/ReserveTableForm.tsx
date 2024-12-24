@@ -3,7 +3,7 @@
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { format } from "date-fns";
+import { format, isToday, parse, isWithinInterval } from "date-fns";
 import { CalendarIcon, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -37,19 +37,90 @@ import axios from "axios";
 import Modal from "@/components/Modal";
 import LanguageContext from "@/context/LanguageContext";
 
-// Updated time slots generation
-const generateTimeSlots = () => {
-  const timeSlots = [];
+const WORKING_HOURS = {
+  1: [], // Monday - Closed
+  2: [
+    // Tuesday
+    { start: "10:30", end: "14:00" },
+    { start: "16:30", end: "23:00" },
+  ],
+  3: [
+    // Wednesday
+    { start: "10:30", end: "14:00" },
+    { start: "16:30", end: "23:00" },
+  ],
+  4: [
+    // Thursday
+    { start: "10:30", end: "14:00" },
+    { start: "16:30", end: "23:00" },
+  ],
+  5: [
+    // Friday
+    { start: "10:30", end: "14:00" },
+    { start: "16:30", end: "23:00" },
+  ],
+  6: [
+    // Saturday
+    { start: "12:00", end: "23:00" },
+  ],
+  0: [
+    // Sunday
+    { start: "12:00", end: "23:00" },
+  ],
+};
 
+// Updated time slots generation
+const generateTimeSlots = (selectedDate: Date | undefined) => {
+  if (!selectedDate) return [];
+
+  const timeSlots = [];
+  // const currentDate = new Date();
+  const dayOfWeek = selectedDate.getDay();
+  const workingHoursForDay =
+    WORKING_HOURS[dayOfWeek as keyof typeof WORKING_HOURS];
+
+  // If it's Monday (closed) or no working hours defined, return empty array
+  if (!workingHoursForDay || workingHoursForDay.length === 0) {
+    return [];
+  }
+
+  // Helper function to check if a time is within working hours
+  const isWithinWorkingHours = (timeStr: string) => {
+    const timeToCheck = parse(timeStr, "HH:mm", new Date());
+
+    return workingHoursForDay.some((period) => {
+      const startTime = parse(period.start, "HH:mm", new Date());
+      const endTime = parse(period.end, "HH:mm", new Date());
+      return isWithinInterval(timeToCheck, { start: startTime, end: endTime });
+    });
+  };
+
+  // Generate all possible 30-minute slots
   for (let hour = 0; hour < 24; hour++) {
-    timeSlots.push({
-      value: `${hour.toString().padStart(2, "0")}:00`,
-      label: `${hour.toString().padStart(2, "0")}:00`,
-    });
-    timeSlots.push({
-      value: `${hour.toString().padStart(2, "0")}:30`,
-      label: `${hour.toString().padStart(2, "0")}:30`,
-    });
+    for (const minute of [0, 30]) {
+      const timeStr = `${hour.toString().padStart(2, "0")}:${minute
+        .toString()
+        .padStart(2, "0")}`;
+
+      // Skip if time is not within working hours
+      if (!isWithinWorkingHours(timeStr)) {
+        continue;
+      }
+
+      // For today, skip times that have already passed
+      if (isToday(selectedDate)) {
+        const currentTime = new Date();
+        const slotTime = parse(timeStr, "HH:mm", currentTime);
+        if (slotTime <= currentTime) {
+          continue;
+        }
+      }
+
+      timeSlots.push({
+        value: timeStr,
+        label: timeStr,
+      });
+    }
   }
 
   return timeSlots;
@@ -71,9 +142,27 @@ const formSchema = z.object({
     .date({
       invalid_type_error: "Please select a valid date.",
     })
-    .refine((date) => date >= new Date(), {
-      message: "Date cannot be in the past.",
-    }),
+    .refine(
+      (date) => {
+        const dayOfWeek = date.getDay();
+        return dayOfWeek !== 1; // Reject Mondays
+      },
+      {
+        message: "Restaurant is closed on Mondays.",
+      }
+    )
+    .refine(
+      (date) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDate = new Date(date);
+        selectedDate.setHours(0, 0, 0, 0);
+        return selectedDate >= today;
+      },
+      {
+        message: "Date cannot be in the past.",
+      }
+    ),
   time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/, {
     message: "Time must be in HH:mm format.",
   }),
@@ -100,8 +189,6 @@ function ReserveTableForm() {
   }
   const { language } = context;
 
-  const timeSlots = generateTimeSlots();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -112,6 +199,26 @@ function ReserveTableForm() {
       time: "",
     },
   });
+  const timeSlots = generateTimeSlots(form.watch("date"));
+
+  const isDateDisabled = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+
+    // Allow today's date and reject only past dates
+    if (checkDate < today) {
+      return true;
+    }
+
+    // If it's Monday, show message instead of just disabling
+    if (date.getDay() === 1) {
+      return true;
+    }
+
+    return false;
+  };
 
   const openConfirmationModal = (values: z.infer<typeof formSchema>) => {
     setFormData(values);
@@ -271,13 +378,31 @@ function ReserveTableForm() {
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
+                      <div className="p-3">
+                        {field.value?.getDay() === 1 && (
+                          <div className="text-red-500 text-sm mb-2">
+                            {language === "en"
+                              ? "Restaurant is closed on Mondays"
+                              : "Restaurant ist montags geschlossen"}
+                          </div>
+                        )}
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={isDateDisabled}
+                          initialFocus
+                          modifiers={{
+                            closed: (date) => date.getDay() === 1,
+                          }}
+                          modifiersStyles={{
+                            closed: {
+                              color: "var(--red-500)",
+                              textDecoration: "line-through",
+                            },
+                          }}
+                        />
+                      </div>
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -300,8 +425,12 @@ function ReserveTableForm() {
                         <SelectValue
                           placeholder={
                             language == "en"
-                              ? "Select a Time"
-                              : "Uhrzeit auswählen"
+                              ? timeSlots.length > 0
+                                ? "Select a Time"
+                                : "No times available"
+                              : timeSlots.length > 0
+                              ? "Uhrzeit auswählen"
+                              : "Keine Zeiten verfügbar"
                           }
                         />
                       </SelectTrigger>
@@ -484,8 +613,8 @@ function ReserveTableForm() {
               <Clock size={80} className="text-yellow-500 animate-pulse" />
               <h2 className="text-2xl font-bold text-[#2e0a16] text-center">
                 {language == "en"
-                  ? "Reservation Request Received!"
-                  : "Reservierungsanfrage eingegangen!"}
+                  ? "Thank you for your reservation request!"
+                  : "Vielen Dank für Ihre Reservierungsanfrage!"}
               </h2>
               <div className="text-gray-600 text-center space-y-2">
                 <p>
@@ -495,8 +624,8 @@ function ReserveTableForm() {
                 </p>
                 <p className="text-sm">
                   {language == "en"
-                    ? "You will receive a confirmation email once your reservation is confirmed."
-                    : "Sie erhalten eine Bestätigungs-E-Mail, sobald Ihre Reservierung bestätigt wurde."}
+                    ? "Your reservation request is being processed. You will receive a confirmation email soon."
+                    : "Ihre Reservierungsanfrage wird bearbeitet. Sie erhalten bald eine Bestätigungs-E-Mail."}
                 </p>
               </div>
               <Button
