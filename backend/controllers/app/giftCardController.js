@@ -3,12 +3,28 @@ const User = require("../../models/User");
 const paypal = require("paypal-rest-sdk"); // Assuming PayPal is used for payments
 const crypto = require("crypto");
 const sendEmail = require("../../config/mailer");
+const puppeteer = require("puppeteer");
 
 paypal.configure({
   mode: process.env.PAYPAL_MODE, // Use "live" for production
   client_id: process.env.PAYPAL_CLIENT_ID,
   client_secret: process.env.YOUR_CLIENT_SECRET,
 });
+
+async function generateImage(htmlContent) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+
+  // Capture screenshot as PNG
+  const imageBuffer = await page.screenshot({
+    // fullPage: true,
+    type: "png",
+  });
+
+  await browser.close();
+  return imageBuffer;
+}
 
 // Helper function to generate unique gift card code
 const generateUniqueCode = async () => {
@@ -193,7 +209,7 @@ exports.verifyGiftCardPayment = async (req, res) => {
           stroke-miterlimit="10"
         />
         <text
-          x="190"
+          x="90"
           y="40"
           textAnchor="middle"
           fill="#78303C"
@@ -203,7 +219,7 @@ exports.verifyGiftCardPayment = async (req, res) => {
           MUSEUM RESTAURANT
         </text>
         <text
-          x="190"
+          x="90"
           y="100"
           textAnchor="middle"
           fill="#78303C"
@@ -213,7 +229,7 @@ exports.verifyGiftCardPayment = async (req, res) => {
          ${giftCard.amount}€
         </text>
         <text
-          x="190"
+          x="90"
           y="140"
           textAnchor="middle"
           fill="#78303C"
@@ -301,11 +317,14 @@ exports.verifyGiftCardPayment = async (req, res) => {
   </div>
 </body>`;
 
+            const pdfBuffer = await generateImage(svg);
+
             await sendEmail(
               giftCard.recipientEmail,
               "Gift Card Pucrchased!",
               ``,
-              htmlCode
+              htmlCode,
+              [{ filename: "GiftCardDetails.png", content: pdfBuffer }]
             );
 
             res.status(200).json({

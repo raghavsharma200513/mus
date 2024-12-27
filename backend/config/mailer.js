@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (to, subject, body, html) => {
+const sendEmail = async (to, subject, body, html, attachments = []) => {
   return new Promise((resolve, reject) => {
     // Create transporter using Hostinger SMTP settings
     var transporter = nodemailer.createTransport({
@@ -19,12 +19,13 @@ const sendEmail = async (to, subject, body, html) => {
       subject: subject,
       text: body,
       html: html,
+      attachments: attachments, // Add attachments array to mail options
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.error("Email sending error:", error);
-        reject(error); // Changed to reject for better error handling
+        reject(error);
       } else {
         console.log("Email sent successfully: " + info);
         resolve(true);

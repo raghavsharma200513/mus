@@ -6,6 +6,7 @@ const GiftCard = require("../../models/GiftCard");
 const Coupon = require("../../models/DiscountModal");
 const Address = require("../../models/Address");
 const paypal = require("paypal-rest-sdk");
+const puppeteer = require("puppeteer");
 const sendEmail = require("../../config/mailer");
 
 paypal.configure({
@@ -13,6 +14,182 @@ paypal.configure({
   client_id: process.env.PAYPAL_CLIENT_ID,
   client_secret: process.env.YOUR_CLIENT_SECRET,
 });
+
+const formatItemsWithVariantsAndAddOns = (items) => {
+  return items
+    .map(
+      (item, index) => `
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;" colspan="3">
+            <strong>${index + 1}. ${item.name}</strong>
+          </td>
+        </tr>
+        ${
+          item.variants.length > 0
+            ? `<tr>
+               <td style="padding: 10px; border: 1px solid #ddd; color: #555;">
+                 Variant:
+               </td>
+               <td colspan="2" style="padding: 10px; border: 1px solid #ddd;">
+                 ${item.variants
+                   .map((variant) => `${variant.name} (₹${variant.price})`)
+                   .join(", ")}
+               </td>
+             </tr>`
+            : ""
+        }
+        ${
+          item.addOns.length > 0
+            ? `<tr>
+               <td style="padding: 10px; border: 1px solid #ddd; color: #555;">
+                 Add-Ons:
+               </td>
+               <td colspan="2" style="padding: 10px; border: 1px solid #ddd;">
+                 ${item.addOns
+                   .map(
+                     (addOn) =>
+                       `${addOn.name} (Qty: ${addOn.quantity}, ₹${addOn.price})`
+                   )
+                   .join(", ")}
+               </td>
+             </tr>`
+            : ""
+        }
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;">Quantity</td>
+          <td style="padding: 10px; border: 1px solid #ddd;">${
+            item.quantity
+          }</td>
+          <td style="padding: 10px; border: 1px solid #ddd;">₹${item.price}</td>
+        </tr>`
+    )
+    .join("");
+};
+
+const generateOrderEmailTemplate = (order, paymentDetails = null) => {
+  const isOnlinePayment = !!paymentDetails;
+
+  const paymentInfo = isOnlinePayment
+    ? `
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Payment ID:</strong></td>
+        <td style="padding: 10px; border: 1px solid #ddd;">${paymentDetails.id}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Payment Status:</strong></td>
+        <td style="padding: 10px; border: 1px solid #ddd;">${paymentDetails.state}</td>
+      </tr>`
+    : "";
+
+  return `
+    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px;">
+      <h2 style="text-align: center; color: #d35400;">Museum Restaurant</h2>
+      <p><strong>Dear Museum Restaurant Team,</strong></p>
+      <p>You have received a new order${
+        isOnlinePayment ? " with successful online payment" : ""
+      } from your website. Below are the order details:</p>
+      
+      <h4>Customer Details:</h4>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;"><strong>Name:</strong></td>
+          <td style="padding: 10px; border: 1px solid #ddd;">${
+            order.address.fullName
+          }</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;"><strong>Phone Number:</strong></td>
+          <td style="padding: 10px; border: 1px solid #ddd;">${order.phone}</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;"><strong>Email:</strong></td>
+          <td style="padding: 10px; border: 1px solid #ddd;">${order.email}</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;"><strong>Delivery Address:</strong></td>
+          <td style="padding: 10px; border: 1px solid #ddd;">
+            ${order.address.fullName},<br>
+            ${order.address.addressLine1},<br>
+            ${order.address.city}, ${order.address.state}, ${
+    order.address.zipCode
+  },<br>
+            ${order.address.country}
+          </td>
+        </tr>
+      </table>
+
+      <h4>Order Details:</h4>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;"><strong>Order Number:</strong></td>
+          <td style="padding: 10px; border: 1px solid #ddd;">${order._id}</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;"><strong>Order Date & Time:</strong></td>
+          <td style="padding: 10px; border: 1px solid #ddd;">${new Date(
+            order.createdAt
+          ).toLocaleString("en-US")}</td>
+        </tr>
+        ${paymentInfo}
+      </table>
+
+      <h4>Items Ordered:</h4>
+      <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+        <tr>
+          <th style="padding: 10px; border: 1px solid #ddd;">Item</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">Quantity</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
+        </tr>
+        ${formatItemsWithVariantsAndAddOns(order.items)}
+      </table>
+
+      <h4>Payment Summary:</h4>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;"><strong>Total Amount:</strong></td>
+          <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₹${
+            order.orderTotal
+          }</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ddd;"><strong>Payment Method:</strong></td>
+          <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">${
+            order.paymentMethod
+          }</td>
+        </tr>
+      </table>
+
+      <h4>Special Instructions (if any):</h4>
+      <p style="padding: 10px; border: 1px solid #ddd;">${
+        order.specialInstructions || "None"
+      }</p>
+
+      <p>Please ensure this order is prepared and delivered/picked up promptly. If you have any questions or need to contact the customer, they can be reached at ${
+        order.phone
+      }.</p>
+
+      <div style="text-align: center; margin: 20px 0;">
+        <a href="${
+          process.env.DOMAIN
+        }adminnavbar" style="background-color: #d35400; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Pending Orders</a>
+      </div>
+
+      <p>Thank you,</p>
+      <p><a href="${
+        process.env.DOMAIN
+      }">www.museum-restaurant-hechingen.de</a></p>
+    </div>
+  `;
+};
+
+async function generatePDF(htmlContent) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+  const pdfBuffer = await page.pdf({ format: "A4" });
+  await browser.close();
+  return pdfBuffer;
+}
 
 class OrderController {
   static async calculateOrderAmount(cart, couponCode = null) {
@@ -76,9 +253,9 @@ class OrderController {
     discountAmount = Math.min(discountAmount, totalAmount);
 
     const result = {
-      subtotal: totalAmount,
-      discount: discountAmount,
-      total: totalAmount - discountAmount,
+      subtotal: totalAmount.toFixed(2),
+      discount: discountAmount.toFixed(2),
+      total: +totalAmount - +discountAmount,
       discountType: discountType,
     };
 
@@ -330,12 +507,15 @@ class OrderController {
         </div>
         `;
 
-        const mail = await sendEmail(
-          "mandeepsingh227@yahoo.com",
-          // "prakhargaba@gmail.com",
+        const pdfBuffer = await generatePDF(emailContent);
+
+        await sendEmail(
+          // "mandeepsingh227@yahoo.com",
+          "prakhargaba@gmail.com",
           `New Order Received from ${order.address.fullName}`,
           "",
-          emailContent
+          emailContent,
+          [{ filename: "OrderDetails.pdf", content: pdfBuffer }]
         );
         // console.log("mail", mail);
 
@@ -420,20 +600,20 @@ class OrderController {
             const giftCard = await GiftCard.findOne({ code: order.couponCode });
 
             // console.log(4);
-            if (!giftCard) {
-              return res.status(404).json({ error: "Gift card not found" });
-            }
-            // console.log(5);
+            if (giftCard) {
+              // return res.status(404).json({ error: "Gift card not found" });
+              // console.log(5);
 
-            // if (giftCard.isRedeemed) {
-            //   return res
-            //     .status(400)
-            //     .json({ error: "Gift card already redeemed" });
-            // }
-            // console.log(6);
-            giftCard.isRedeemed = true;
-            giftCard.status = "redeemed";
-            await giftCard.save();
+              // if (giftCard.isRedeemed) {
+              //   return res
+              //     .status(400)
+              //     .json({ error: "Gift card already redeemed" });
+              // }
+              // console.log(6);
+              giftCard.isRedeemed = true;
+              giftCard.status = "redeemed";
+              await giftCard.save();
+            }
 
             // console.log(7);
             // Clear cart
@@ -443,6 +623,169 @@ class OrderController {
               cart.totalAmount = 0;
               await cart.save();
             }
+
+            const formatItemsWithVariantsAndAddOns = (items) =>
+              items
+                .map(
+                  (item, index) => `
+                    <tr>
+                      <td style="padding: 10px; border: 1px solid #ddd;" colspan="3">
+                        <strong>${index + 1}. ${item.name}</strong>
+                      </td>
+                    </tr>
+                    ${
+                      item.variants.length > 0
+                        ? `<tr>
+                             <td style="padding: 10px; border: 1px solid #ddd; color: #555;">
+                               Variant:
+                             </td>
+                             <td colspan="2" style="padding: 10px; border: 1px solid #ddd;">
+                               ${item.variants
+                                 .map(
+                                   (variant) =>
+                                     `${variant.name} (₹${variant.price})`
+                                 )
+                                 .join(", ")}
+                             </td>
+                           </tr>`
+                        : ""
+                    }
+                    ${
+                      item.addOns.length > 0
+                        ? `<tr>
+                             <td style="padding: 10px; border: 1px solid #ddd; color: #555;">
+                               Add-Ons:
+                             </td>
+                             <td colspan="2" style="padding: 10px; border: 1px solid #ddd;">
+                               ${item.addOns
+                                 .map(
+                                   (addOn) =>
+                                     `${addOn.name} (Qty: ${addOn.quantity}, ₹${addOn.price})`
+                                 )
+                                 .join(", ")}
+                             </td>
+                           </tr>`
+                        : ""
+                    }
+                    <tr>
+                      <td style="padding: 10px; border: 1px solid #ddd;">Quantity</td>
+                      <td style="padding: 10px; border: 1px solid #ddd;">${
+                        item.quantity
+                      }</td>
+                      <td style="padding: 10px; border: 1px solid #ddd;">₹${
+                        item.price
+                      }</td>
+                    </tr>`
+                )
+                .join("");
+
+            const emailContent = `
+            <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px;">
+              <h2 style="text-align: center; color: #d35400;">Museum Restaurant</h2>
+              <p><strong>Dear Museum Restaurant Team,</strong></p>
+              <p>You have received a new order from your website. Below are the order details:</p>
+              <h4>Customer Details:</h4>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>Name:</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${
+                    order.address.fullName
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>Phone Number:</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${
+                    order.phone
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>Email:</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${
+                    order.email
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>Delivery Address:</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">
+                    ${order.address.fullName},<br>
+                    ${order.address.addressLine1},<br>
+                    ${order.address.city}, ${order.address.state}, ${
+              order.address.zipCode
+            },<br>
+                    ${order.address.country}
+                  </td>
+                </tr>
+              </table>
+              <h4>Order Details:</h4>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>Order Number:</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${
+                    order._id
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>Order Date & Time:</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${new Date(
+                    order.createdAt
+                  ).toLocaleString("en-US")}</td>
+                </tr>
+              </table>
+              <h4>Items Ordered:</h4>
+              <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+                <tr>
+                  <th style="padding: 10px; border: 1px solid #ddd;">Item</th>
+                  <th style="padding: 10px; border: 1px solid #ddd;">Quantity</th>
+                  <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
+                </tr>
+                ${formatItemsWithVariantsAndAddOns(order.items)}
+              </table>
+              <h4>Payment Summary:</h4>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>Total Amount:</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₹${
+                    order.orderTotal
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>Payment Method:</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">${
+                    order.paymentMethod
+                  }</td>
+                </tr>
+              </table>
+              <h4>Special Instructions (if any):</h4>
+              <p style="padding: 10px; border: 1px solid #ddd;">${
+                order.specialInstructions || "None"
+              }</p>
+              <p>
+                Please ensure this order is prepared and delivered/picked up promptly. If you have any questions or need to contact the customer, they can be reached at ${
+                  order.phone
+                }.
+              </p>
+              <div style="text-align: center; margin: 20px 0;">
+                <a href="${
+                  process.env.DOMAIN
+                }adminnavbar" style="background-color: #d35400; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Pending Orders</a>
+              </div>
+              <p>Thank you,</p>
+              <p><a href="${
+                process.env.DOMAIN
+              }">www.museum-restaurant-hechingen.de</a></p>
+            </div>
+            `;
+
+            const pdfBuffer = await generatePDF(emailContent);
+
+            await sendEmail(
+              // "mandeepsingh227@yahoo.com",
+              "prakhargaba@gmail.com",
+              `New Order Received from ${order.address.fullName}`,
+              "",
+              emailContent,
+              [{ filename: "OrderDetails.pdf", content: pdfBuffer }]
+            );
             // console.log(8);
 
             return res.status(200).json({

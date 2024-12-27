@@ -1,5 +1,7 @@
 const Reservation = require("../../models/Reservation");
 const sendEmail = require("../../config/mailer");
+// const { default: puppeteer } = require("puppeteer");
+const puppeteer = require("puppeteer");
 
 // Custom error class
 class AppError extends Error {
@@ -9,6 +11,15 @@ class AppError extends Error {
     this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
     this.isOperational = true;
   }
+}
+
+async function generatePDF(htmlContent) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+  const pdfBuffer = await page.pdf({ format: "A4" });
+  await browser.close();
+  return pdfBuffer;
 }
 
 exports.createReservation = async (req, res) => {
@@ -113,12 +124,15 @@ exports.createReservation = async (req, res) => {
 </div>
 `;
 
+    const pdfBuffer = await generatePDF(emailTemplate);
+
     await sendEmail(
-      // "prakhargaba@gmail.com",
-      "mandeepsingh227@yahoo.com",
+      "prakhargaba@gmail.com",
+      // "mandeepsingh227@yahoo.com",
       "New Table Reservation Received",
       "",
-      emailTemplate
+      emailTemplate,
+      [{ filename: "ReservationDetails.pdf", content: pdfBuffer }]
     );
 
     res.status(201).json(newReservation);

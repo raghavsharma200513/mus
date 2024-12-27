@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
         </Link>
 
         {/* Desktop Navigation Menu */}
-        <div className="hidden md:flex nav-menu text-white gap-8 font-jost font-normal text-sm">
+        <div className="hidden lg:flex nav-menu text-white gap-8 font-jost font-normal text-sm">
           {links[language].map((link, index) => (
             <NavLink
               key={index}
@@ -123,7 +123,7 @@ const Navbar: React.FC = () => {
         <div className="nav-right flex items-center gap-4">
           {/* Language Selector */}
           <Select value={language} onValueChange={handleLanguageChange}>
-            <SelectTrigger className="w-100 text-white hidden md:flex">
+            <SelectTrigger className="w-100 text-white hidden lg:flex">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-primary text-white">
@@ -153,7 +153,7 @@ const Navbar: React.FC = () => {
             <div className="flex items-center gap-4">
               <Link
                 to="orders"
-                className="cartIcon cursor-pointer transform hover:translate-y-[-4px] transition-all duration-500 hidden md:block"
+                className="cartIcon cursor-pointer transform hover:translate-y-[-4px] transition-all duration-500 hidden lg:block"
               >
                 <CircleUser color="#ffffff" />
               </Link>
@@ -162,7 +162,7 @@ const Navbar: React.FC = () => {
                 className="login flex gap-1 text-white bg-secondary items-center place-content-center content-center font-jost py-3 px-4 rounded hover:bg-secondary/80 transition-color duration-500"
               >
                 <ShoppingCart />
-                <span className="hidden md:inline">
+                <span className="hidden lg:inline">
                   {language === "en" ? "Cart" : "Warenkorb"}
                 </span>
               </Link>
@@ -179,14 +179,12 @@ const Navbar: React.FC = () => {
             </Link>
           )}
 
-          {/* Mobile Menu Toggle */}
-          <button className="md:hidden text-white" onClick={toggleMobileMenu}>
+          <button className="lg:hidden text-white" onClick={toggleMobileMenu}>
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-primary z-40 md:hidden"
