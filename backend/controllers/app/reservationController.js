@@ -127,8 +127,8 @@ exports.createReservation = async (req, res) => {
     const pdfBuffer = await generatePDF(emailTemplate);
 
     await sendEmail(
-      "prakhargaba@gmail.com",
-      // "mandeepsingh227@yahoo.com",
+      // "prakhargaba@gmail.com",
+      "mandeepsingh227@yahoo.com",
       "New Table Reservation Received",
       "",
       emailTemplate,

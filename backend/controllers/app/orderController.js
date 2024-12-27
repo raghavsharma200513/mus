@@ -510,8 +510,8 @@ class OrderController {
         const pdfBuffer = await generatePDF(emailContent);
 
         await sendEmail(
-          // "mandeepsingh227@yahoo.com",
-          "prakhargaba@gmail.com",
+          "mandeepsingh227@yahoo.com",
+          // "prakhargaba@gmail.com",
           `New Order Received from ${order.address.fullName}`,
           "",
           emailContent,
@@ -779,8 +779,8 @@ class OrderController {
             const pdfBuffer = await generatePDF(emailContent);
 
             await sendEmail(
-              // "mandeepsingh227@yahoo.com",
-              "prakhargaba@gmail.com",
+              "mandeepsingh227@yahoo.com",
+              // "prakhargaba@gmail.com",
               `New Order Received from ${order.address.fullName}`,
               "",
               emailContent,
