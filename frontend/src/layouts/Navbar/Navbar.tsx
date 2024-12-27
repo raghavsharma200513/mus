@@ -173,7 +173,7 @@ const Navbar: React.FC = () => {
               className="login flex gap-1 text-white bg-secondary items-center place-content-center content-center font-jost py-3 px-4 rounded hover:bg-secondary/80 transition-color duration-500"
             >
               <img src={assets.person} alt="Person icon" />
-              <span className="hidden md:inline">
+              <span className="hidden ls:inline">
                 {language === "en" ? "Login" : "Anmelden"}
               </span>
             </Link>
@@ -187,7 +187,7 @@ const Navbar: React.FC = () => {
 
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-primary z-40 md:hidden"
+          className="fixed inset-0 bg-primary z-40 lg:hidden"
           onClick={closeMobileMenu}
         >
           <div
