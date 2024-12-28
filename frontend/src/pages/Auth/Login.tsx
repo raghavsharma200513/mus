@@ -31,25 +31,25 @@ const LoginPage = () => {
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
         formData
       );
-      console.log("response", response);
+      // console.log("response", response);
 
       //   const data = await response.json();
-      console.log("data", response.data.data);
-      console.log(1);
+      // console.log("data", response.data.data);
+      // console.log(1);
       setSuccess("Login Successful");
-      console.log(2);
+      // console.log(2);
       dispatch(saveProfile(response.data.data));
-      console.log(5);
+      // console.log(5);
       localStorage.setItem("token", response.data.data.token);
-      console.log(response.data.data.user.role);
-      console.log(6);
+      // console.log(response.data.data.user.role);
+      // console.log(6);
 
       if (response.data.data.user.role === "admin") {
-        console.log(4);
+        // console.log(4);
 
         window.location.href = "/adminnavbar";
       } else {
-        console.log(3);
+        // console.log(3);
         window.location.href = "/";
       }
     } catch (err) {
@@ -84,7 +84,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-[80vh] bg-gray-100">
+    <div className="flex items-center justify-center h-[80vh] bg-gray-100 px-5">
       <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
         <h1 className="text-2xl font-bold text-center text-[#554539] mb-6">
           Login

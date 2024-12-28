@@ -1,20 +1,22 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { saveProfile } from "../../redux/slices/profileReducer";
 
 interface FormData {
+  name: string;
+  email: string;
   mobile_number: string;
   password: string;
+  confirm_password: string;
 }
 
-const LoginPage: React.FC = () => {
-  const dispatch = useDispatch();
-
+const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
     mobile_number: "",
     password: "",
+    confirm_password: "",
   });
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
@@ -29,63 +31,79 @@ const LoginPage: React.FC = () => {
     setError("");
     setSuccess("");
 
-    const { mobile_number, password } = formData;
-    if (!mobile_number || !password) {
-      setError("Both fields are required");
+    const { name, email, mobile_number, password, confirm_password } = formData;
+
+    if (!name || !email || !mobile_number || !password || !confirm_password) {
+      setError("All fields are required");
+      return;
+    }
+
+    if (password !== confirm_password) {
+      setError("Passwords do not match");
       return;
     }
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
-        formData
-      );
-
-      setSuccess("Login Successful");
-      dispatch(saveProfile(response.data.data));
-      localStorage.setItem("token", response.data.data.token);
-
-      if (response.data.data.user.role === "admin") {
-        window.location.href = "/adminnavbar";
-      } else {
-        window.location.href = "/";
-      }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError("Something went wrong");
-      }
-    }
-  };
-
-  const handleGuestLogin = async (e: FormEvent): Promise<void> => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    try {
-      const response = await axios.post(
+      const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/register`,
-        { type: "guest" }
+        {
+          name,
+          email,
+          mobile_number,
+          password,
+          type: "user",
+        }
       );
 
-      setSuccess("Login Successful");
-      dispatch(saveProfile(response.data.data));
-      localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("token", data.data.token);
+
+      setSuccess("Registration Successful. You can now login.");
+      setFormData({
+        name: "",
+        email: "",
+        mobile_number: "",
+        password: "",
+        confirm_password: "",
+      });
       window.location.href = "/";
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError("Something went wrong");
+        setError("Something went wrong. Please try again.");
       }
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-[80vh] bg-gray-100">
+    <div className="flex items-center justify-center h-[80vh] bg-gray-100 py-96 px-5">
       <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
         <h1 className="text-2xl font-bold text-center text-[#554539] mb-6">
-          Login
+          Register
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#554539]"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#554539]"
+            />
+          </div>
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">
               Mobile Number
@@ -110,31 +128,34 @@ const LoginPage: React.FC = () => {
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#554539]"
             />
           </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              name="confirm_password"
+              value={formData.confirm_password}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#554539]"
+            />
+          </div>
+
           {error && <p className="text-sm text-red-500">{error}</p>}
           {success && <p className="text-sm text-green-500">{success}</p>}
 
-          <div className="space-y-4">
-            <button
-              type="submit"
-              className="w-full py-2 text-white bg-[#2E0A16] rounded hover:bg-opacity-90"
-            >
-              Login
-            </button>
-
-            <button
-              type="button"
-              onClick={handleGuestLogin}
-              className="w-full py-2 text-white bg-[#554539] rounded hover:bg-opacity-90"
-            >
-              Login as Guest
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full py-2 text-white bg-[#2E0A16] rounded hover:bg-opacity-90"
+          >
+            Register
+          </button>
         </form>
 
         <p className="mt-4 text-sm text-center">
-          Don&#39;t have an account?{" "}
-          <Link to="/register" className="text-[#2E0A16] underline">
-            Register here
+          Already have an account?{" "}
+          <Link to="/login" className="text-[#2E0A16] underline">
+            Login here
           </Link>
         </p>
       </div>
@@ -142,4 +163,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
