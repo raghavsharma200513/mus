@@ -84,11 +84,11 @@ class AddressController {
   // Get all addresses for a user
   static async getAddresses(req, res) {
     const userId = req.userId;
-    console.log("userIddd", userId);
+    // console.log("userIddd", userId);
 
     try {
       const addresses = await Address.find({ userId });
-      console.log("address", addresses);
+      // console.log("address", addresses);
       res.status(200).json(addresses);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch addresses", error });

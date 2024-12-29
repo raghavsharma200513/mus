@@ -215,7 +215,7 @@ class CartController {
 
   static async getCart(req, res) {
     const userId = req.userId;
-    console.log("1. Getting cart for userId:", userId);
+    // console.log("1. Getting cart for userId:", userId);
 
     try {
       let cart = await Cart.findOne({ userId })
@@ -228,64 +228,64 @@ class CartController {
           },
         });
 
-      console.log(
-        "2. Initial cart from database:",
-        JSON.stringify(cart, null, 2)
-      );
+      // console.log(
+      //   "2. Initial cart from database:",
+      //   JSON.stringify(cart, null, 2)
+      // );
 
       if (!cart) {
-        console.log("3A. No cart found, creating new cart");
+        // console.log("3A. No cart found, creating new cart");
         cart = new Cart({ userId, items: [], totalAmount: 0 });
         await cart.save();
         return res.status(200).json(cart);
       }
 
-      console.log(
-        "3B. Found existing cart with items count:",
-        cart.items.length
-      );
+      // console.log(
+      //   "3B. Found existing cart with items count:",
+      //   cart.items.length
+      // );
 
       // Array to store valid items after complete verification
       let validatedItems = [];
 
       // Validate each item in the cart
       for (let item of cart.items) {
-        console.log("\n4. Validating item:", JSON.stringify(item, null, 2));
+        // console.log("\n4. Validating item:", JSON.stringify(item, null, 2));
 
         // Skip if menuItem is null
         if (!item.menuItem) {
-          console.log("5A. Skipping item - menuItem is null");
+          // console.log("5A. Skipping item - menuItem is null");
           continue;
         }
 
         // Fetch fresh menu item data
         const currentMenuItem = await Menu.findById(item.menuItem._id);
-        console.log(
-          "5B. Current menu item from database:",
-          JSON.stringify(currentMenuItem, null, 2)
-        );
+        // console.log(
+        //   "5B. Current menu item from database:",
+        //   JSON.stringify(currentMenuItem, null, 2)
+        // );
 
         if (!currentMenuItem) {
-          console.log(
-            "5C. Skipping item - menu item no longer exists in database"
-          );
+          // console.log(
+          //   "5C. Skipping item - menu item no longer exists in database"
+          // );
           continue;
         }
 
         // Validate variant
         const currentVariant = currentMenuItem.variants.find((v) => {
-          console.log(v.name.toString());
-          console.log(item.variant.name);
+          // console.log(v.name.toString());
+          // console.log(item.variant.name);
 
           return v.name.toString() === item.variant.name;
         });
-        console.log(
-          "6. Found variant:",
-          JSON.stringify(currentVariant, null, 2)
-        );
+        // console.log(
+        //   "6. Found variant:",
+        //   JSON.stringify(currentVariant, null, 2)
+        // );
 
         if (!currentVariant) {
-          console.log("6A. Skipping item - variant no longer exists");
+          // console.log("6A. Skipping item - variant no longer exists");
           continue;
         }
 
@@ -293,23 +293,23 @@ class CartController {
         const validAddons = [];
         let allAddonsValid = true;
 
-        console.log(
-          "7. Validating addons:",
-          JSON.stringify(item.addOns, null, 2)
-        );
+        // console.log(
+        //   "7. Validating addons:",
+        //   JSON.stringify(item.addOns, null, 2)
+        // );
         for (let addon of item.addOns) {
           const currentAddon = currentMenuItem.addOns.find(
             (a) => a.name === addon.name
           );
-          console.log(
-            "7A. Checking addon:",
-            addon.name,
-            "Found:",
-            !!currentAddon
-          );
+          // console.log(
+          //   "7A. Checking addon:",
+          //   addon.name,
+          //   "Found:",
+          //   !!currentAddon
+          // );
 
           if (!currentAddon) {
-            console.log("7B. Invalid addon found:", addon.name);
+            // console.log("7B. Invalid addon found:", addon.name);
             allAddonsValid = false;
             break;
           }
@@ -322,7 +322,7 @@ class CartController {
         }
 
         if (!allAddonsValid) {
-          console.log("7C. Skipping item - not all addons are valid");
+          // console.log("7C. Skipping item - not all addons are valid");
           continue;
         }
 
@@ -335,17 +335,17 @@ class CartController {
           },
           addOns: validAddons,
         };
-        console.log(
-          "8. Adding validated item:",
-          JSON.stringify(validatedItem, null, 2)
-        );
+        // console.log(
+        //   "8. Adding validated item:",
+        //   JSON.stringify(validatedItem, null, 2)
+        // );
         validatedItems.push(validatedItem);
       }
 
-      console.log(
-        "9. All validated items:",
-        JSON.stringify(validatedItems, null, 2)
-      );
+      // console.log(
+      //   "9. All validated items:",
+      //   JSON.stringify(validatedItems, null, 2)
+      // );
 
       // Update cart with validated items
       cart.items = validatedItems;
@@ -354,15 +354,15 @@ class CartController {
       cart.totalAmount = await CartController.calculateCartTotal(
         validatedItems
       );
-      console.log("10. Recalculated total:", cart.totalAmount);
+      // console.log("10. Recalculated total:", cart.totalAmount);
 
       // Save updated cart
       await cart.save();
-      console.log("11. Saved updated cart");
+      // console.log("11. Saved updated cart");
 
       res.status(200).json(cart);
     } catch (error) {
-      console.log("ERROR in getCart:", error);
+      // console.log("ERROR in getCart:", error);
       res.status(500).json({ message: "Failed to fetch cart", error });
     }
   }

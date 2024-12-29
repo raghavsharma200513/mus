@@ -255,7 +255,7 @@ class OrderController {
     const result = {
       subtotal: totalAmount.toFixed(2),
       discount: discountAmount.toFixed(2),
-      total: +totalAmount - +discountAmount,
+      total: +totalAmount.toFixed(2) - +discountAmount.toFixed(2),
       discountType: discountType,
     };
 
@@ -272,7 +272,7 @@ class OrderController {
       paymentMethod, // 'cash' or 'online'
     } = req.body;
     const userId = req.userId;
-    console.log("couponCode", couponCode);
+    // console.log("couponCode", couponCode);
 
     try {
       if (!addressId || !cartId || !paymentMethod) {
@@ -297,6 +297,7 @@ class OrderController {
       // 2. Calculate order amount with coupon
       const { subtotal, discount, total, discountType } =
         await OrderController.calculateOrderAmount(cart, couponCode);
+      console.log({ subtotal, discount, total, discountType });
 
       // 3. Prepare order items
       const orderItems = cart.items.map((item) => ({
@@ -307,7 +308,6 @@ class OrderController {
         variants: [item.variant],
         addOns: item.addOns,
       }));
-      // console.log("orderItems", orderItems);
 
       // 4. Create order object
       const order = new Order({
@@ -331,7 +331,7 @@ class OrderController {
       // 5. Handle based on payment method
       if (paymentMethod === "cod" || paymentMethod === "pod") {
         await order.save();
-        console.log("cod");
+        // console.log("cod");
 
         // Clear cart
         cart.items = [];
@@ -353,7 +353,7 @@ class OrderController {
           giftCard.status = "redeemed";
           await giftCard.save();
         }
-        console.log("order", order);
+        // console.log("order", order);
 
         const formatItemsWithVariantsAndAddOns = (items) =>
           items
@@ -510,8 +510,8 @@ class OrderController {
         const pdfBuffer = await generatePDF(emailContent);
 
         await sendEmail(
-          "mandeepsingh227@yahoo.com",
-          // "prakhargaba@gmail.com",
+          // "mandeepsingh227@yahoo.com",
+          "prakhargaba@gmail.com",
           `New Order Received from ${order.address.fullName}`,
           "",
           emailContent,
@@ -562,7 +562,7 @@ class OrderController {
 
   static async verifyPayment(req, res) {
     const { orderId, payerId, paymentId } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     try {
       const order = await Order.findById(orderId);
